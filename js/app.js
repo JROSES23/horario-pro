@@ -6,9 +6,18 @@ let detalleDiaActual = null;
 let detalleDiaEl = null;
 let detalleAccordionOpen = false;
 let filtroTurnos = 'Todos';
+let ocultarLibres = true;
 
-const ORDEN_TURNOS = ['AM', 'PM', 'FULL', 'LIBRE', 'VAC', 'N/A'];
+const ORDEN_TURNOS = ['AM', 'PM', 'FULL', 'VAC', 'LIBRE', 'N/A'];
 const SELECTED_DAY_CLASS = 'ring-2 ring-offset-2 ring-primary shadow-lg shadow-teal-200/40';
+
+// Marca usuarios inhouse (jefes). Completa con nombres exactos si aplica.
+const INHOUSE = new Set([
+  'Maria Jesús Rozas',
+  'José Ortiz',
+  'Pamela Figueroa',
+  'Catalina Sandoval'
+]);
 
 // Funciones de utilidad
 function getColorClasses(turno, esHoy) {
@@ -111,6 +120,11 @@ function toggleAccordion() {
   renderDetalleDia();
 }
 
+function toggleOcultarLibres() {
+  ocultarLibres = !ocultarLibres;
+  renderDetalleDia();
+}
+
 function clearSelectedDay() {
   if (detalleDiaEl) {
     detalleDiaEl.classList.remove(...SELECTED_DAY_CLASS.split(' '));
@@ -124,6 +138,193 @@ function highlightSelectedDay(el) {
     el.classList.add(...SELECTED_DAY_CLASS.split(' '));
     detalleDiaEl = el;
   }
+}
+
+function getUserRowClasses(nombre) {
+  const isCurrent = nombre === usuarioActual;
+  const isInhouse = INHOUSE.has(nombre);
+  const base = 'p-3 rounded-xl border flex items-center gap-3 transition-colors';
+
+  if (isCurrent) {
+    return { cls: base + ' bg-yellow-50 border-yellow-200', isCurrent, isInhouse };
+  }
+
+  if (isInhouse) {
+    return { cls: base + ' bg-slate-50 border-slate-200', isCurrent, isInhouse };
+  }
+
+  return { cls: base + ' bg-white border-gray-100', isCurrent, isInhouse };
+}
+
+function renderUserBadges(isCurrent, isInhouse) {
+  let badges = '';
+  if (isCurrent) {
+    badges += '<span class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-900 font-semibold" aria-label="Tú">Tú</span>';
+  }
+  if (isInhouse) {
+    badges += '<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-semibold" aria-label="Inhouse">Inhouse</span>';
+  }
+  return badges;
+}
+
+function renderDetalleDia() {
+  if (!detalleDiaActual) return;
+  const { turnoUsuario, otros, counts } = getTurnosPorDia(detalleDiaActual);
+  const diaName = getDiaSemana(detalleDiaActual);
+  const vacRange = turnoUsuario === 'VAC' ? getVacationRange(usuarioActual, detalleDiaActual) : null;
+  const inhouseActual = INHOUSE.has(usuarioActual);
+
+  const resumenLinea = `AM: ${counts.AM} · PM: ${counts.PM} · FULL: ${counts.FULL} · VAC: ${counts.VAC} · LIBRE: ${counts.LIBRE}`;
+
+  const filtros = [
+    { label: 'Todos', value: 'Todos' },
+    { label: 'Solo LIBRE', value: 'Solo LIBRE' },
+    { label: 'Solo AM/PM', value: 'Solo AM/PM' },
+    { label: 'Solo VAC', value: 'Solo VAC' }
+  ];
+
+  const aplicaFiltro = (turno) => {
+    if (filtroTurnos === 'Todos') return true;
+    if (filtroTurnos === 'Solo LIBRE') return turno === 'LIBRE';
+    if (filtroTurnos === 'Solo AM/PM') return turno === 'AM' || turno === 'PM';
+    if (filtroTurnos === 'Solo VAC') return turno === 'VAC';
+    return true;
+  };
+
+  const otrosFiltrados = otros.filter(u => aplicaFiltro(u.turno)).filter(u => {
+    if (filtroTurnos === 'Solo LIBRE') return true;
+    if (ocultarLibres && u.turno === 'LIBRE') return false;
+    return true;
+  });
+
+  const grupos = ORDEN_TURNOS.map(turno => ({
+    turno,
+    usuarios: otrosFiltrados.filter(u => u.turno === turno)
+  })).filter(g => g.usuarios.length > 0);
+
+  let otrosHtml = '';
+  if (grupos.length === 0) {
+    otrosHtml = '<div class="p-4 text-center text-sm text-gray-500">No hay otros turnos para este día.</div>';
+  } else {
+    grupos.forEach(grupo => {
+      if (grupo.turno === 'LIBRE' && ocultarLibres && filtroTurnos !== 'Solo LIBRE') return;
+
+      otrosHtml += `
+        <div class="pt-3">
+          <div class="px-4 pb-2 text-xs font-bold uppercase tracking-wide text-gray-500">${grupo.turno} (${grupo.usuarios.length})</div>
+          <div class="px-4 space-y-2">
+            ${grupo.usuarios.map(u => {
+              const row = getUserRowClasses(u.nombre);
+              const badges = renderUserBadges(row.isCurrent, row.isInhouse);
+              const vacInfo = u.turno === 'VAC' && u.vacRange ? ` <span class="text-xs text-gray-500">(Vacaciones del ${u.vacRange.startDay} al ${u.vacRange.endDay})</span>` : '';
+
+              return `
+                <div class="${row.cls}">
+                  <div class="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                    ${getInitials(u.nombre)}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <div class="font-medium text-sm text-gray-800 truncate">${u.nombre}</div>
+                      ${badges}
+                    </div>
+                    <div class="text-xs text-gray-600 font-medium">${u.turno}${vacInfo}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  const content = `
+    <div class="p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-sm font-semibold text-gray-500">Detalle del día</div>
+        <button onclick="cerrarDetalleDia()" class="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors">
+          <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-4 space-y-4">
+      <div class="bg-gradient-to-br from-slate-50 to-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-xs font-bold uppercase tracking-wide text-gray-500">Tu turno</div>
+          <div class="flex items-center gap-2">
+            ${inhouseActual ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-semibold" aria-label="Inhouse">Inhouse</span>' : ''}
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="px-4 py-2 rounded-2xl text-sm font-bold ${getBadgeClasses(turnoUsuario)}">
+            ${turnoUsuario}
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="${getIcono(turnoUsuario)}" class="w-6 h-6 text-gray-700"></i>
+            <div class="text-2xl font-extrabold text-gray-800">${turnoUsuario}</div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-600 font-medium">Día ${detalleDiaActual} ${diaName}</div>
+        ${vacRange ? `<div class="mt-1 text-xs text-gray-500">(Vacaciones del ${vacRange.startDay} al ${vacRange.endDay})</div>` : ''}
+      </div>
+
+      <div class="text-xs text-gray-500 space-y-1">
+        <div class="font-semibold text-gray-600">Resumen del día</div>
+        <div>${resumenLinea}</div>
+        <div>Libres hoy: ${counts.LIBRE} · En vacaciones: ${counts.VAC}</div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-200">
+      <button class="w-full px-4 py-3 flex items-center justify-between" onclick="toggleAccordion()" aria-expanded="${detalleAccordionOpen}">
+        <span class="font-semibold text-sm text-gray-800">Otros turnos</span>
+        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform ${detalleAccordionOpen ? 'rotate-180' : ''}"></i>
+      </button>
+      ${detalleAccordionOpen ? `
+        <div class="pb-4">
+          <div class="px-4 flex items-center justify-between text-xs text-gray-600 mb-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" class="rounded border-gray-300" ${ocultarLibres ? 'checked' : ''} onchange="toggleOcultarLibres()">
+              <span class="font-semibold">Ocultar libres</span>
+            </label>
+          </div>
+          <div class="px-4 flex flex-wrap gap-2 mb-3">
+            ${filtros.map(f => `
+              <button onclick="setFiltroTurnos('${f.value}')" class="text-xs px-3 py-1 rounded-full border ${filtroTurnos === f.value ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-200'}">
+                ${f.label}
+              </button>
+            `).join('')}
+          </div>
+          ${otrosHtml}
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  const container = document.getElementById('dayModalContent');
+  container.innerHTML = content;
+
+  lucide.createIcons();
+}
+
+function abrirDetalleDia(dia, el) {
+  detalleDiaActual = dia;
+  highlightSelectedDay(el);
+  renderDetalleDia();
+  document.getElementById('dayModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarDetalleDia() {
+  document.getElementById('dayModal').classList.add('hidden');
+  document.body.style.overflow = '';
+  clearSelectedDay();
+  detalleDiaActual = null;
+  detalleAccordionOpen = false;
+  filtroTurnos = 'Todos';
+  ocultarLibres = true;
 }
 
 // Renderizar calendario
@@ -162,224 +363,9 @@ function renderCalendario() {
   lucide.createIcons();
 }
 
-// Mostrar coincidencias
-function mostrarCoincidencias(dia) {
-  const turnoUsuario = USUARIOS[usuarioActual][dia - 1];
-  
-  if (turnoUsuario === 'N/A') return;
-  
-  const diaName = DIAS[new Date(2026, 1, dia).getDay()];
-  
-  document.getElementById('sidebarTitle').textContent = `Día ${dia} ${diaName} - ${turnoUsuario}`;
-  
-  // Buscar coincidencias
-  const mismosTurno = [];
-  for (const [nombre, turnos] of Object.entries(USUARIOS)) {
-    if (nombre === usuarioActual || turnos[dia - 1] === 'N/A') continue;
-    if (turnos[dia - 1] === turnoUsuario) {
-      mismosTurno.push(nombre);
-    }
-  }
-  
-  let html = '';
-  
-  // Usuario actual (destacado)
-  html += `
-    <div class="p-3 border-b border-gray-100 bg-yellow-50">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-gradient-to-br from-primary to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-          ${getInitials(usuarioActual)}
-        </div>
-        <div class="flex-1">
-          <div class="font-semibold text-sm text-gray-800">${usuarioActual}</div>
-          <div class="text-xs text-gray-600 font-medium">${turnoUsuario} <span class="text-primary">(Tú)</span></div>
-        </div>
-        <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500"></i>
-      </div>
-    </div>
-  `;
-  
-  // Coincidencias
-  if (mismosTurno.length > 0) {
-    mismosTurno.forEach(nombre => {
-      html += `
-        <div class="p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
-              ${getInitials(nombre)}
-            </div>
-            <div class="flex-1">
-              <div class="font-medium text-sm text-gray-800">${nombre}</div>
-              <div class="text-xs text-gray-600">${turnoUsuario}</div>
-            </div>
-            <i data-lucide="check-circle" class="w-4 h-4 text-success"></i>
-          </div>
-        </div>
-      `;
-    });
-  } else {
-    html += `
-      <div class="p-6 text-center">
-        <i data-lucide="users-round" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
-        <p class="text-sm text-gray-500 font-medium">No hay otros compañeros en este turno</p>
-      </div>
-    `;
-  }
-  
-  document.getElementById('sidebarContent').innerHTML = html;
-  document.getElementById('sidebar').classList.remove('hidden');
-  
-  // Inicializar íconos Lucide
-  lucide.createIcons();
-  
-  // Scroll suave al sidebar
-  setTimeout(() => {
-    document.getElementById('sidebar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 100);
-}
-
-function getFiltroButtonClass(valor) {
-  return valor === filtroTurnos
-    ? 'bg-primary text-white'
-    : 'bg-gray-100 text-gray-700 hover:bg-gray-200';
-}
-
-function renderDetalleDia() {
-  if (!detalleDiaActual) return;
-
-  const { turnoUsuario, otros, counts } = getTurnosPorDia(detalleDiaActual);
-  const diaName = getDiaSemana(detalleDiaActual);
-  const vacRange = turnoUsuario === 'VAC' ? getVacationRange(usuarioActual, detalleDiaActual) : null;
-  const vacText = vacRange ? ` (Vacaciones del ${vacRange.startDay} al ${vacRange.endDay})` : '';
-
-  let otrosFiltrados = otros;
-  if (filtroTurnos === 'Solo LIBRE') {
-    otrosFiltrados = otros.filter(u => u.turno === 'LIBRE');
-  } else if (filtroTurnos === 'Solo AM/PM') {
-    otrosFiltrados = otros.filter(u => u.turno === 'AM' || u.turno === 'PM');
-  } else if (filtroTurnos === 'Solo VAC') {
-    otrosFiltrados = otros.filter(u => u.turno === 'VAC');
-  }
-
-  let otrosHtml = '';
-  const grupos = {};
-  ORDEN_TURNOS.forEach(turno => { grupos[turno] = []; });
-  otrosFiltrados.forEach(u => {
-    if (!grupos[u.turno]) grupos[u.turno] = [];
-    grupos[u.turno].push(u);
-  });
-
-  const hayOtros = otrosFiltrados.length > 0;
-
-  if (hayOtros) {
-    ORDEN_TURNOS.forEach(turno => {
-      const lista = grupos[turno];
-      if (!lista || lista.length === 0) return;
-
-      otrosHtml += `
-        <div class="pt-3">
-          <div class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">${turno} (${lista.length})</div>
-          <div class="space-y-2">
-            ${lista.map(u => {
-              const vacInfo = u.turno === 'VAC' && u.vacRange
-                ? `VAC (Vacaciones del ${u.vacRange.startDay} al ${u.vacRange.endDay})`
-                : u.turno;
-              return `
-                <div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div class="w-9 h-9 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                    ${getInitials(u.nombre)}
-                  </div>
-                  <div class="flex-1">
-                    <div class="text-sm font-semibold text-gray-800">${u.nombre}</div>
-                    <div class="text-xs text-gray-600 font-medium">${vacInfo}</div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  if (!hayOtros) {
-    otrosHtml = `
-      <div class="py-6 text-center text-sm text-gray-500 font-medium">
-        No hay otros turnos para este día.
-      </div>
-    `;
-  }
-
-  const content = `
-    <div class="p-4 border-b border-gray-200">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h3 class="font-bold text-lg text-gray-800">Día ${detalleDiaActual} ${diaName}</h3>
-          <div class="mt-1 text-sm font-semibold text-gray-700">
-            Turno de ${usuarioActual}: ${turnoUsuario}${vacText}
-          </div>
-        </div>
-        <button onclick="cerrarDetalleDia()" class="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors">
-          <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
-        </button>
-      </div>
-      <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${getBadgeClasses(turnoUsuario)}">
-        ${turnoUsuario}
-      </div>
-      <div class="mt-3 text-xs text-gray-600 space-y-1">
-        <div>Total libres hoy: <span class="font-semibold text-gray-800">${counts.LIBRE}</span></div>
-        <div>Total en vacaciones: <span class="font-semibold text-gray-800">${counts.VAC}</span></div>
-        <div>Total AM: <span class="font-semibold text-gray-800">${counts.AM}</span> · PM: <span class="font-semibold text-gray-800">${counts.PM}</span> · FULL: <span class="font-semibold text-gray-800">${counts.FULL}</span></div>
-      </div>
-    </div>
-    <div class="p-4">
-      <button onclick="toggleAccordion()" class="w-full flex items-center justify-between gap-3 py-3 border-b border-gray-200 text-left font-semibold text-gray-800" aria-expanded="${detalleAccordionOpen}">
-        <span>Otros turnos</span>
-        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500 transition-transform ${detalleAccordionOpen ? 'rotate-180' : ''}"></i>
-      </button>
-      <div class="transition-all duration-200 ${detalleAccordionOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden">
-        <div class="pt-3">
-          <div class="flex flex-wrap gap-2 mb-3">
-            <button onclick="setFiltroTurnos('Todos')" class="px-3 py-1.5 rounded-full text-xs font-semibold ${getFiltroButtonClass('Todos')}">Todos</button>
-            <button onclick="setFiltroTurnos('Solo LIBRE')" class="px-3 py-1.5 rounded-full text-xs font-semibold ${getFiltroButtonClass('Solo LIBRE')}">Solo LIBRE</button>
-            <button onclick="setFiltroTurnos('Solo AM/PM')" class="px-3 py-1.5 rounded-full text-xs font-semibold ${getFiltroButtonClass('Solo AM/PM')}">Solo AM/PM</button>
-            <button onclick="setFiltroTurnos('Solo VAC')" class="px-3 py-1.5 rounded-full text-xs font-semibold ${getFiltroButtonClass('Solo VAC')}">Solo VAC</button>
-          </div>
-          ${otrosHtml}
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('dayModalContent').innerHTML = content;
-  lucide.createIcons();
-}
-
-function abrirDetalleDia(dia, el) {
-  detalleDiaActual = dia;
-  highlightSelectedDay(el || document.querySelector(`[data-day="${dia}"]`));
-
-  document.getElementById('sidebar').classList.add('hidden');
-  renderDetalleDia();
-  document.getElementById('dayModal').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-}
-
-function cerrarDetalleDia() {
-  document.getElementById('dayModal').classList.add('hidden');
-  document.getElementById('dayModalContent').innerHTML = '';
-  document.body.style.overflow = '';
-  detalleDiaActual = null;
-  clearSelectedDay();
-}
-
 // Cambiar usuario
 function cambiarUsuario() {
   usuarioActual = document.getElementById('userSelect').value;
-  document.getElementById('sidebar').classList.add('hidden');
-  if (!document.getElementById('dayModal').classList.contains('hidden')) {
-    cerrarDetalleDia();
-  }
   renderCalendario();
 }
 
@@ -388,14 +374,6 @@ function toggleEdit() {
   modoEdit = !modoEdit;
   const btn = document.getElementById('editBtn');
   btn.classList.toggle('bg-white/20', modoEdit);
-  
-  // Ocultar sidebar si está abierto
-  if (modoEdit) {
-    document.getElementById('sidebar').classList.add('hidden');
-    if (!document.getElementById('dayModal').classList.contains('hidden')) {
-      cerrarDetalleDia();
-    }
-  }
 }
 
 // Abrir modal de edición
@@ -426,7 +404,7 @@ function guardarEdit() {
   cerrarEdit();
   
   // Mostrar notificación de éxito
-  mostrarNotificacion('✅ Turno actualizado correctamente');
+  mostrarNotificacion('? Turno actualizado correctamente');
 }
 
 // Mostrar notificación
@@ -461,10 +439,10 @@ function uploadExcel() {
         // Procesar datos del Excel
         procesarExcel(data);
         
-        mostrarNotificacion(`✅ Excel cargado: ${workbook.SheetNames.length} hojas procesadas`);
+        mostrarNotificacion(`? Excel cargado: ${workbook.SheetNames.length} hojas procesadas`);
       } catch (err) {
         console.error('Error al procesar Excel:', err);
-        mostrarNotificacion('❌ Error al leer el archivo Excel');
+        mostrarNotificacion('? Error al leer el archivo Excel');
       }
     };
     
@@ -481,7 +459,7 @@ function procesarExcel(data) {
   // Por ahora solo mostramos los datos en consola
 }
 
-// Cerrar modal al hacer click fuera
+// Cerrar modal de edición al hacer click fuera
 document.addEventListener('click', (e) => {
   const modal = document.getElementById('editModal');
   if (e.target === modal) {
@@ -489,12 +467,13 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Cerrar modal detalle con Escape
+// Cerrar modal de detalle con Escape
 document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape') return;
-  const dayModal = document.getElementById('dayModal');
-  if (!dayModal.classList.contains('hidden')) {
-    cerrarDetalleDia();
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('dayModal');
+    if (!modal.classList.contains('hidden')) {
+      cerrarDetalleDia();
+    }
   }
 });
 
@@ -503,4 +482,3 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendario();
   lucide.createIcons();
 });
-
