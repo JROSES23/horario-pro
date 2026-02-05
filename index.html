@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Sistema de gestión de horarios laborales para equipos y empresas">
+<meta name="theme-color" content="#0D8C75">
+<title>Horario Pro - Gestión de Turnos Laborales</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- XLSX Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- Custom Config -->
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0D8C75',
+        secondary: '#10B981',
+        accent: '#4FD1C7',
+        success: '#059669',
+      }
+    }
+  }
+}
+</script>
+
+<style>
+* { 
+  font-family: 'Inter', sans-serif; 
+  -webkit-tap-highlight-color: transparent;
+}
+
+.day-cell { 
+  transition: all 200ms ease-in-out; 
+  user-select: none;
+}
+
+.day-cell:active { 
+  transform: scale(0.95); 
+}
+
+@media (hover: hover) {
+  .day-cell:hover { 
+    transform: scale(1.05); 
+  }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up { 
+  animation: slide-up 0.3s ease-out; 
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in { 
+  animation: fade-in 0.2s ease-out; 
+}
+
+.sidebar-enter {
+  animation: slide-up 0.3s ease-out;
+}
+</style>
+</head>
+<body class="h-full bg-gradient-to-br from-slate-50 to-teal-50 antialiased">
+
+<div class="min-h-screen max-w-md mx-auto bg-white shadow-2xl flex flex-col">
+  
+  <!-- HEADER FIJO -->
+  <div class="sticky top-0 z-50 bg-gradient-to-r from-primary to-teal-600 shadow-lg">
+    <div class="px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <i data-lucide="calendar-days" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-white font-bold text-lg leading-tight">Horario Pro</h1>
+          <p class="text-teal-100 text-xs font-medium">Febrero 2026</p>
+        </div>
+      </div>
+      <button onclick="toggleEdit()" id="editBtn" class="p-2 hover:bg-white/10 rounded-lg transition-colors active:bg-white/20">
+        <i data-lucide="pencil" class="w-5 h-5 text-white"></i>
+      </button>
+    </div>
+    
+    <!-- SELECTOR USUARIO -->
+    <div class="px-4 pb-3">
+      <div class="relative">
+        <select id="userSelect" onchange="cambiarUsuario()" class="w-full bg-white/95 backdrop-blur-sm text-gray-800 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-white/50 appearance-none cursor-pointer">
+          <option value="Renato  Fuentes">👤 Renato Fuentes</option>
+          <option value="Valentina  Obando">👤 Valentina Obando</option>
+          <option value="Diego  Salinas">👤 Diego Salinas</option>
+          <option value="Daniela Illanes">👤 Daniela Illanes</option>
+          <option value="Krishna Olea">👤 Krishna Olea</option>
+          <option value="Jose Villagra (reemplazo)">👤 Jose Villagra</option>
+          <option value="Viviana Medina">👤 Viviana Medina</option>
+          <option value="Alejandro Calfuman">👤 Alejandro Calfuman</option>
+          <option value="Daniela Cheuquenao">👤 Daniela Cheuquenao</option>
+          <option value="Diego  Martínez">👤 Diego Martínez</option>
+          <option value="Juan  Chávez">👤 Juan Chávez</option>
+          <option value="Rocio Álvarez">👤 Rocio Álvarez</option>
+          <option value="Alexis Ladino">👤 Alexis Ladino</option>
+          <option value="Yuliana Obando">👤 Yuliana Obando</option>
+          <option value="Catalina Pedreros">👤 Catalina Pedreros</option>
+          <option value="Catalina Sepúlveda">👤 Catalina Sepúlveda</option>
+          <option value="Escarlet  Rozas">👤 Escarlet Rozas</option>
+          <option value="Enzo Oliva">👤 Enzo Oliva</option>
+          <option value="Pamela Figueroa">👤 Pamela Figueroa</option>
+          <option value="José Ortiz">👤 José Ortiz</option>
+          <option value="Maria Jesús Rozas">👤 Maria Jesús Rozas</option>
+          <option value="Catalina Sandoval">👤 Catalina Sandoval</option>
+        </select>
+        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      </div>
+    </div>
+
+    <!-- BADGE DÍA ACTUAL -->
+    <div class="px-4 pb-3">
+      <div class="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-sm">
+        <i data-lucide="calendar" class="w-4 h-4 text-primary"></i>
+        <span class="text-sm font-bold text-gray-800">HOY: DÍA 4 MIÉRCOLES</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="flex-1 overflow-auto">
+    
+    <!-- LEYENDA -->
+    <div class="px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-gray-200">
+      <div class="flex flex-wrap gap-3 justify-center text-xs">
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded bg-accent shadow-sm"></div>
+          <span class="font-semibold text-gray-700">AM</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded bg-secondary shadow-sm"></div>
+          <span class="font-semibold text-gray-700">PM</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded bg-slate-300 shadow-sm"></div>
+          <span class="font-semibold text-gray-700">LIBRE</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded bg-yellow-300 shadow-sm"></div>
+          <span class="font-semibold text-gray-700">VAC</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded bg-red-400 shadow-sm"></div>
+          <span class="font-semibold text-gray-700">FULL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO -->
+    <div class="p-4">
+      <!-- Headers días -->
+      <div class="grid grid-cols-7 gap-1 mb-2">
+        <div class="text-center text-xs font-bold text-primary">D</div>
+        <div class="text-center text-xs font-bold text-primary">L</div>
+        <div class="text-center text-xs font-bold text-primary">M</div>
+        <div class="text-center text-xs font-bold text-primary">M</div>
+        <div class="text-center text-xs font-bold text-primary">J</div>
+        <div class="text-center text-xs font-bold text-primary">V</div>
+        <div class="text-center text-xs font-bold text-primary">S</div>
+      </div>
+      
+      <!-- Grid días -->
+      <div id="calGrid" class="grid grid-cols-7 gap-1"></div>
+    </div>
+
+    <!-- SIDEBAR COINCIDENCIAS -->
+    <div id="sidebar" class="hidden px-4 pb-4">
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden sidebar-enter">
+        <div class="bg-gradient-to-r from-primary to-teal-600 px-4 py-3">
+          <h3 class="text-white font-bold text-sm flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span id="sidebarTitle">Coincidencias</span>
+          </h3>
+        </div>
+        <div id="sidebarContent" class="max-h-80 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER UPLOAD -->
+  <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+    <button onclick="uploadExcel()" class="w-full bg-gradient-to-r from-primary to-teal-600 hover:from-teal-700 hover:to-primary active:scale-95 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2">
+      <i data-lucide="upload" class="w-5 h-5"></i>
+      <span>Cargar Excel</span>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL DETALLE DÍA -->
+<div id="dayModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end justify-center animate-fade-in" role="dialog" aria-modal="true" onclick="cerrarDetalleDia()">
+  <div class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <div id="dayModalContent"></div>
+  </div>
+</div>
+
+<!-- MODAL EDICIÓN -->
+<div id="editModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end justify-center animate-fade-in">
+  <div class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl animate-slide-up" onclick="event.stopPropagation()">
+    <div class="p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-bold text-lg text-gray-800" id="editTitle">Editar Día</h3>
+        <button onclick="cerrarEdit()" class="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors">
+          <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
+        </button>
+      </div>
+    </div>
+    <div class="p-4">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Seleccionar Turno</label>
+      <select id="editTurno" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+        <option value="AM">☀️ Mañana (AM)</option>
+        <option value="PM">🌙 Tarde (PM)</option>
+        <option value="LIBRE">🏖️ Día Libre</option>
+        <option value="VAC">🏝️ Vacaciones</option>
+        <option value="FULL">👥 Jornada Completa</option>
+      </select>
+      <button onclick="guardarEdit()" class="w-full mt-4 bg-primary hover:bg-teal-700 active:scale-95 text-white font-bold py-3 rounded-lg transition-all shadow-md">
+        Guardar Cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
