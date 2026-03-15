@@ -1,0 +1,65 @@
+{
+  "owner": "Nicole",
+  "career": "Kinesiología",
+  "source": "imagen horario",
+  "semester": "2026/1",
+  "time_blocks": {
+    "1": { "start": "08:30", "end": "09:30" },
+    "2": { "start": "09:40", "end": "10:40" },
+    "3": { "start": "10:50", "end": "11:50" },
+    "4": { "start": "12:00", "end": "13:00" },
+    "ALM": { "start": "13:10", "end": "14:10", "label": "Almuerzo" },
+    "5": { "start": "14:30", "end": "15:30" },
+    "6": { "start": "15:40", "end": "16:40" },
+    "7": { "start": "16:50", "end": "17:50" },
+    "8": { "start": "18:00", "end": "19:00" },
+    "9": { "start": "19:10", "end": "20:10" }
+  },
+  "week": {
+    "monday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Laboratorio Grupo 1", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Laboratorio Grupo 1", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Laboratorio Grupo 1", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Psicología", "type": "clase", "room": null, "notes": null },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Seminario Biomecánica", "type": "clase", "room": "S-202", "notes": null },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Seminario Biomecánica", "type": "clase", "room": "S-202", "notes": null }
+    ],
+    "tuesday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Seminario/Taller", "type": "clase", "room": "S-202", "notes": null },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 7, "start_time": "16:50", "end_time": "17:50", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" }
+    ],
+    "wednesday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Bioestadística", "type": "clase", "room": null, "notes": null },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Bioestadística", "type": "clase", "room": null, "notes": null },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Bioestadística", "type": "clase", "room": null, "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Física", "type": "clase", "room": "CF-110", "notes": null },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Neuroanatomía", "type": "clase", "room": null, "notes": null },
+      { "block": 7, "start_time": "16:50", "end_time": "17:50", "subject": "Neuroanatomía", "type": "clase", "room": null, "notes": null }
+    ],
+    "thursday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Laboratorio Grupo 2", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Laboratorio Grupo 2", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Laboratorio Grupo 2", "type": "lab", "room": null, "notes": "Práctica" },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 7, "start_time": "16:50", "end_time": "17:50", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" }
+    ],
+    "friday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Tutoría", "type": "tut", "room": null, "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Seminario/Taller", "type": "clase", "room": "Prat-201", "notes": null },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" },
+      { "block": 7, "start_time": "16:50", "end_time": "17:50", "subject": "Práctica", "type": "practica", "room": null, "notes": "variable" }
+    ],
+    "saturday": []
+  }
+}

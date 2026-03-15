@@ -1,0 +1,49 @@
+{
+  "owner": "Renato",
+  "career": "Ingeniería Civil Ambiental",
+  "source": "PDF oficial UFRO",
+  "semester": "2026/1",
+  "time_blocks": {
+    "1": { "start": "08:30", "end": "09:30" },
+    "2": { "start": "09:40", "end": "10:40" },
+    "3": { "start": "10:50", "end": "11:50" },
+    "4": { "start": "12:00", "end": "13:00" },
+    "ALM": { "start": "13:10", "end": "14:10", "label": "Almuerzo" },
+    "5": { "start": "14:30", "end": "15:30" },
+    "6": { "start": "15:40", "end": "16:40" },
+    "7": { "start": "16:50", "end": "17:50" },
+    "8": { "start": "18:00", "end": "19:00" },
+    "9": { "start": "19:10", "end": "20:10" }
+  },
+  "week": {
+    "monday": [
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "R-103", "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "R-103", "notes": null },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Int. a la Química", "code": "ICQ011-9", "type": "clase", "room": "E-205", "notes": null },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Int. a la Química", "code": "ICQ011-9", "type": "clase", "room": "E-205", "notes": null },
+      { "block": 7, "start_time": "16:50", "end_time": "17:50", "subject": "Ing. y Sociedad", "code": "ING050-1", "type": "clase", "room": "VIR-201-FICA", "notes": null },
+      { "block": 9, "start_time": "19:10", "end_time": "20:10", "subject": "Hab. Com. en Inglés", "code": "DFI052-3", "type": "clase", "room": "VIR-204", "notes": null }
+    ],
+    "tuesday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Int. a la Química", "code": "ICQ011-9", "type": "clase", "room": "E-205", "notes": null },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Int. a la Química", "code": "ICQ011-9", "type": "clase", "room": "E-205", "notes": null },
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-2004", "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-2004", "notes": null }
+    ],
+    "wednesday": [
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-1004", "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-1004", "notes": null },
+      { "block": 5, "start_time": "14:30", "end_time": "15:30", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "RA-1002", "notes": null },
+      { "block": 6, "start_time": "15:40", "end_time": "16:40", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "RA-1002", "notes": null }
+    ],
+    "thursday": [
+      { "block": 1, "start_time": "08:30", "end_time": "09:30", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "R-103", "notes": null },
+      { "block": 2, "start_time": "09:40", "end_time": "10:40", "subject": "Álgebra", "code": "IME043-9", "type": "clase", "room": "R-103", "notes": null }
+    ],
+    "friday": [
+      { "block": 3, "start_time": "10:50", "end_time": "11:50", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-2001", "notes": null },
+      { "block": 4, "start_time": "12:00", "end_time": "13:00", "subject": "Fund. Cálculo", "code": "IME042-9", "type": "clase", "room": "RA-2001", "notes": null }
+    ],
+    "saturday": []
+  }
+}

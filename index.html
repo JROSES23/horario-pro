@@ -703,19 +703,6 @@
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 const DIAS_KEYS = ['lun', 'mar', 'mie', 'jue', 'vie'];
 
-const BLOQUES = [
-  { n: '1°', rango: '08:30–09:30' },
-  { n: '2°', rango: '09:40–10:40' },
-  { n: '3°', rango: '10:50–11:50' },
-  { n: '4°', rango: '12:00–13:00' },
-  { n: '—',  rango: '13:10–14:20', almuerzo: true },
-  { n: '5°', rango: '14:30–15:30' },
-  { n: '6°', rango: '15:40–16:40' },
-  { n: '7°', rango: '16:50–17:50' },
-  { n: '—',  rango: '18:00–19:00', vacio: true },
-  { n: '9°', rango: '19:10–20:10' },
-];
-
 /*
   Tipo de celda:
     "lab"     → laboratorio Nicole
@@ -788,70 +775,69 @@ const NICOLE = {
   },
 };
 
+// Fuente: PDF oficial UFRO 2026/1
 const RENATO = {
-  0: {
-    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'libre', nombre:'' },
-    mie: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
-    jue: { tipo:'libre', nombre:'' },
-    vie: { tipo:'libre', nombre:'' },
+  0: { // 1° 08:30 — lun vacío, mar Int.Química, mie vacío, jue Álgebra, vie vacío
+    lun: { tipo:'libre',  nombre:'' },
+    mar: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
+    mie: { tipo:'libre',  nombre:'' },
+    jue: { tipo:'clase',  nombre:'Álgebra', sala:'R-103' },
+    vie: { tipo:'libre',  nombre:'' },
   },
-  1: {
-    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'libre', nombre:'' },
-    mie: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
-    jue: { tipo:'libre', nombre:'' },
-    vie: { tipo:'libre', nombre:'' },
+  1: { // 2° 09:40
+    lun: { tipo:'libre',  nombre:'' },
+    mar: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
+    mie: { tipo:'libre',  nombre:'' },
+    jue: { tipo:'clase',  nombre:'Álgebra', sala:'R-103' },
+    vie: { tipo:'libre',  nombre:'' },
   },
-  2: {
-    lun: { tipo:'libre', nombre:'' },
-    mar: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
-    mie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2004' },
-    jue: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-1004' },
-    vie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2001' },
+  2: { // 3° 10:50 — lun Álgebra, mar Fund.Cálculo RA-2004, mie Fund.Cálculo RA-1004, jue vacío, vie Fund.Cálculo RA-2001
+    lun: { tipo:'clase',  nombre:'Álgebra',       sala:'R-103' },
+    mar: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2004' },
+    mie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-1004' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2001' },
   },
-  3: {
-    lun: { tipo:'libre', nombre:'' },
-    mar: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
-    mie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2004' },
-    jue: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-1004' },
-    vie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2001' },
+  3: { // 4° 12:00
+    lun: { tipo:'clase',  nombre:'Álgebra',       sala:'R-103' },
+    mar: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2004' },
+    mie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-1004' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2001' },
   },
-  5: {
-    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'clase', nombre:'Álgebra', sala:'RA-1002' },
-    mie: { tipo:'libre', nombre:'' },
-    jue: { tipo:'libre', nombre:'' },
-    vie: { tipo:'libre', nombre:'' },
+  5: { // 5° 14:30 — lun Int.Química, mar vacío, mie Álgebra RA-1002, jue vacío, vie vacío
+    lun: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'libre',  nombre:'' },
+    mie: { tipo:'clase',  nombre:'Álgebra', sala:'RA-1002' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'libre',  nombre:'' },
   },
-  6: {
-    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'clase', nombre:'Álgebra', sala:'RA-1002' },
-    mie: { tipo:'libre', nombre:'' },
-    jue: { tipo:'libre', nombre:'' },
-    vie: { tipo:'libre', nombre:'' },
+  6: { // 6° 15:40
+    lun: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'libre',  nombre:'' },
+    mie: { tipo:'clase',  nombre:'Álgebra', sala:'RA-1002' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'libre',  nombre:'' },
   },
-  7: {
-    lun: { tipo:'libre', nombre:'' },
-    mar: { tipo:'libre', nombre:'' },
-    mie: { tipo:'libre', nombre:'' },
-    jue: { tipo:'libre', nombre:'' },
-    vie: { tipo:'clase', nombre:'Ing. y Sociedad', sala:'VIR-201-FICA' },
+  7: { // 7° 16:50 — lun Ing. y Sociedad, resto vacío
+    lun: { tipo:'clase',  nombre:'Ing. y Sociedad', sala:'VIR-201-FICA' },
+    mar: { tipo:'libre',  nombre:'' },
+    mie: { tipo:'libre',  nombre:'' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'libre',  nombre:'' },
   },
-  9: {
-    lun: { tipo:'libre', nombre:'' },
-    mar: { tipo:'libre', nombre:'' },
-    mie: { tipo:'libre', nombre:'' },
-    jue: { tipo:'clase', nombre:'Hab. Com. Inglés', sala:'VIR-204' },
-    vie: { tipo:'libre', nombre:'' },
+  9: { // 9° 19:10 — lun Hab. Com. en Inglés, resto vacío
+    lun: { tipo:'clase',  nombre:'Hab. Com. en Inglés', sala:'VIR-204' },
+    mar: { tipo:'libre',  nombre:'' },
+    mie: { tipo:'libre',  nombre:'' },
+    jue: { tipo:'libre',  nombre:'' },
+    vie: { tipo:'libre',  nombre:'' },
   },
 };
 
 /* =======================================================
    HELPERS
 ======================================================= */
-
-const BLOQUE_TO_IDX = { 0:0, 1:1, 2:2, 3:3, 5:5, 6:6, 7:7, 9:9 };
 
 function getCellN(bloqueN, diaKey) {
   return (NICOLE[bloqueN] && NICOLE[bloqueN][diaKey]) || { tipo:'libre', nombre:'' };
@@ -924,7 +910,7 @@ function halfRenato(c, state) {
 
 function buildTable(getData, renderCell, includeNocturno) {
   const bloquesList = [0,1,2,3,5,6,7];
-  if (includeNocturno) bloquesList.push(9);
+  if (includeNocturno) bloquesList.push(8, 9); // 8 = separador vacío, 9 = nocturno
 
   let rows = '';
   let prevBloqueNum = -1;
@@ -939,19 +925,27 @@ function buildTable(getData, renderCell, includeNocturno) {
           </td>
         </tr>`;
     }
-    // Insert visual gap before nocturno
-    if (bn === 9) {
+    // Block 8 = empty gap row (18:00–19:00, no classes for anyone)
+    if (bn === 8) {
       rows += `
-        <tr class="lunch-row">
-          <td colspan="${DIAS.length + 1}">
-            <div class="lunch-label">— — —</div>
+        <tr>
+          <td>
+            <div class="time-block">
+              <span class="time-num">8°</span>
+              <span class="time-range">18:00–19:00</span>
+            </div>
           </td>
+          ${DIAS_KEYS.map(() => `<td><div class="cell libre">—</div></td>`).join('')}
         </tr>`;
+      prevBloqueNum = bn;
+      continue;
     }
 
-    const bloq = BLOQUES.find(b => b.n === `${bn}°`) ||
-                 (bn === 9 ? { n:'9°', rango:'19:10–20:10' } : null);
-    const rangoStr = bloq ? bloq.rango : '';
+    const bloqRangosMap = {
+      0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
+      5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 9:'19:10–20:10',
+    };
+    const rangoStr = bloqRangosMap[bn] || '';
 
     let tds = '';
     for (const dk of DIAS_KEYS) {
@@ -986,7 +980,11 @@ function buildTable(getData, renderCell, includeNocturno) {
 }
 
 function buildJointTable() {
-  const bloquesList = [0,1,2,3,5,6,7,9];
+  const bloquesList = [0,1,2,3,5,6,7,8,9];
+  const bloqRangosMap = {
+    0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
+    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 8:'18:00–19:00', 9:'19:10–20:10',
+  };
   let rows = '';
   let prevBloqueNum = -1;
 
@@ -999,19 +997,8 @@ function buildJointTable() {
           </td>
         </tr>`;
     }
-    if (bn === 9) {
-      rows += `
-        <tr class="lunch-row">
-          <td colspan="${DIAS.length + 1}">
-            <div class="lunch-label">— — —</div>
-          </td>
-        </tr>`;
-    }
 
-    const bloq = bn === 9
-      ? { rango:'19:10–20:10' }
-      : BLOQUES.find(b => b.n === `${bn}°`);
-    const rangoStr = bloq ? bloq.rango : '';
+    const rangoStr = bloqRangosMap[bn] || '';
 
     let tds = '';
     for (const dk of DIAS_KEYS) {
@@ -1060,10 +1047,10 @@ function buildAnalysis() {
     'cond':       { label:'Nicole práctica variable + Renato libre', icon:'🌫️', key:'card-cond', items:[] },
   };
 
-  const bloquesList = [0,1,2,3,5,6,7,9];
+  const bloquesList = [0,1,2,3,5,6,7,8,9];
   const bloqRangos = {
     0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
-    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 9:'19:10–20:10',
+    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 8:'18:00–19:00', 9:'19:10–20:10',
   };
 
   for (const dk of DIAS_KEYS) {
@@ -1152,7 +1139,7 @@ function buildAnalysis() {
 
 function countNicoleClases() {
   let n = 0;
-  for (const bn of [0,1,2,3,5,6,7,9]) {
+  for (const bn of [0,1,2,3,5,6,7,8,9]) {
     for (const dk of DIAS_KEYS) {
       if (isActive(getCellN(bn, dk))) n++;
     }
@@ -1162,7 +1149,7 @@ function countNicoleClases() {
 
 function countRenatoClases() {
   let n = 0;
-  for (const bn of [0,1,2,3,5,6,7,9]) {
+  for (const bn of [0,1,2,3,5,6,7,8,9]) {
     for (const dk of DIAS_KEYS) {
       if (isActive(getCellR(bn, dk))) n++;
     }
@@ -1221,7 +1208,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Badges
   document.getElementById('badge-nicole').textContent   = `${countNicoleClases()} bloques`;
   document.getElementById('badge-renato').textContent   = `${countRenatoClases()} bloques`;
-  document.getElementById('badge-conjunta').textContent = `${DIAS.length * 8} celdas`;
+  document.getElementById('badge-conjunta').textContent = `${DIAS.length * 9} celdas`;
   document.getElementById('badge-analisis').textContent = `Libres juntos: ${bothFree + cond}`;
 
   // Tabs
