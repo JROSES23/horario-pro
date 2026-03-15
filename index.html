@@ -1,242 +1,1243 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="Sistema de gestión de horarios laborales para equipos y empresas">
-<meta name="theme-color" content="#0D8C75">
-<title>Horario Pro - Gestión de Turnos Laborales</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparador de Horarios — Nicole & Renato</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== VARIABLES ===== */
+    :root {
+      --bg:          #0f0f0f;
+      --surface:     #1a1a1a;
+      --surface2:    #111827;
+      --border:      #2a2a2a;
+      --border2:     #374151;
+      --text:        #f3f4f6;
+      --text-muted:  #9ca3af;
+      --text-dim:    #6b7280;
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+      /* Nicole palette */
+      --n-lab:       #0d9488;
+      --n-lab-bg:    #042f2e;
+      --n-clase:     #14b8a6;
+      --n-clase-bg:  #042f2e;
+      --n-prac:      #f97316;
+      --n-prac-bg:   #2c1600;
+      --n-tut:       #22c55e;
+      --n-tut-bg:    #052e16;
 
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
+      /* Renato palette */
+      --r-clase:     #6366f1;
+      --r-clase-bg:  #1e1b4b;
 
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
+      /* States */
+      --both-class:  #166534;
+      --both-free:   #7f1d1d;
+      --one-class:   #713f12;
+      --cond-free:   #1f2937;
 
-<!-- XLSX Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+      /* Tab active */
+      --tab-active:  #6366f1;
 
-<!-- Custom Config -->
+      --radius: 10px;
+      --radius-sm: 6px;
+      --transition: 0.25s ease;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
+      border-bottom: 1px solid var(--border2);
+      padding: 24px 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--n-clase), var(--r-clase));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .header-titles h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--n-clase), var(--r-clase));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-titles p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ===== TABS ===== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color var(--transition), border-color var(--transition);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--tab-active);
+    }
+
+    .tab-btn.nicole.active { border-bottom-color: var(--n-clase); }
+    .tab-btn.renato.active  { border-bottom-color: var(--r-clase); }
+    .tab-btn.joint.active   { border-bottom-color: #a855f7; }
+    .tab-btn.analisis.active { border-bottom-color: #f59e0b; }
+
+    .badge {
+      background: var(--border2);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .tab-btn.active .badge {
+      background: rgba(99,102,241,0.25);
+      color: #a5b4fc;
+    }
+    .tab-btn.nicole.active .badge { background: rgba(20,184,166,0.2); color: var(--n-clase); }
+    .tab-btn.renato.active .badge  { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .tab-btn.joint.active .badge   { background: rgba(168,85,247,0.2); color: #d8b4fe; }
+    .tab-btn.analisis.active .badge { background: rgba(245,158,11,0.2); color: #fcd34d; }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ===== VIEWS ===== */
+    .view {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .view.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ===== SCHEDULE TABLE ===== */
+    .schedule-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    table.schedule {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    table.schedule th,
+    table.schedule td {
+      border: 1px solid var(--border);
+      padding: 0;
+      vertical-align: top;
+    }
+
+    table.schedule th {
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 10px 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    table.schedule th.time-col {
+      color: var(--text-dim);
+      min-width: 90px;
+      text-align: left;
+    }
+
+    .time-block {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px;
+      gap: 1px;
+    }
+
+    .time-num {
+      font-weight: 700;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .time-range {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    /* ===== CELLS ===== */
+    .cell {
+      padding: 8px 10px;
+      min-height: 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .cell-name {
+      font-weight: 600;
+      line-height: 1.3;
+      font-size: 0.76rem;
+    }
+
+    .cell-room {
+      font-size: 0.67rem;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    .cell-tag {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.75;
+    }
+
+    /* Cell type styles — Nicole */
+    .n-lab    { background: var(--n-lab-bg);   color: #5eead4; }
+    .n-clase  { background: var(--n-clase-bg); color: #99f6e4; }
+    .n-tut    { background: var(--n-tut-bg);   color: #86efac; }
+    .n-prac   {
+      background: var(--n-prac-bg);
+      color: #fdba74;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 4px,
+        rgba(249,115,22,0.08) 4px,
+        rgba(249,115,22,0.08) 8px
+      );
+      border: 1px dashed rgba(249,115,22,0.4) !important;
+    }
+
+    /* Cell type styles — Renato */
+    .r-clase  { background: var(--r-clase-bg); color: #a5b4fc; }
+
+    /* Free cell */
+    .libre    {
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      font-style: italic;
+      min-height: 56px;
+    }
+
+    /* Lunch row */
+    .lunch-row td {
+      background: #0a0a0a;
+      padding: 8px 12px;
+    }
+
+    .lunch-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* ===== JOINT VIEW ===== */
+    .joint-cell {
+      min-height: 56px;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .joint-half {
+      flex: 1;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      font-size: 0.7rem;
+    }
+
+    .joint-half:first-child {
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .joint-half-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      margin-bottom: 2px;
+    }
+
+    .joint-half-name {
+      font-weight: 600;
+      line-height: 1.3;
+      font-size: 0.72rem;
+    }
+
+    .joint-half-room {
+      font-size: 0.62rem;
+      opacity: 0.65;
+    }
+
+    /* Joint state backgrounds */
+    .state-both-class  { background: rgba(22,101,52,0.35); }
+    .state-both-free   { background: rgba(127,29,29,0.25); }
+    .state-one-class   { background: rgba(113,63,18,0.3); }
+    .state-cond        { background: rgba(31,41,55,0.6); background-image: repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(156,163,175,0.05) 5px,rgba(156,163,175,0.05) 10px); }
+
+    .state-both-class .joint-half-name  { color: #86efac; }
+    .state-both-class .joint-half-room  { color: #4ade80; }
+    .state-both-free  .joint-half       { color: #fca5a5; }
+    .state-one-class  .joint-half-name  { color: #fde68a; }
+    .state-cond       .joint-half       { color: var(--text-muted); }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .legend-dot.both-class { background: rgba(22,101,52,0.6); border: 1px solid #16a34a; }
+    .legend-dot.both-free  { background: rgba(127,29,29,0.5); border: 1px solid #dc2626; }
+    .legend-dot.one-class  { background: rgba(113,63,18,0.5); border: 1px solid #d97706; }
+    .legend-dot.cond       { background: rgba(31,41,55,0.8); border: 1px dashed #4b5563; }
+    .legend-dot.n-prac     { background: var(--n-prac-bg); border: 1px dashed rgba(249,115,22,0.5); }
+
+    /* ===== ANALYSIS VIEW ===== */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .analysis-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .analysis-card-header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .analysis-card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .analysis-card-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .analysis-count-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+
+    .card-both-class  .analysis-card-header { background: rgba(22,101,52,0.2); }
+    .card-both-class  .analysis-card-icon   { background: rgba(22,101,52,0.4); }
+    .card-both-class  .analysis-count-badge { background: rgba(22,101,52,0.5); color: #86efac; }
+
+    .card-both-free   .analysis-card-header { background: rgba(127,29,29,0.2); }
+    .card-both-free   .analysis-card-icon   { background: rgba(127,29,29,0.4); }
+    .card-both-free   .analysis-count-badge { background: rgba(127,29,29,0.5); color: #fca5a5; }
+
+    .card-one-class   .analysis-card-header { background: rgba(113,63,18,0.2); }
+    .card-one-class   .analysis-card-icon   { background: rgba(113,63,18,0.4); }
+    .card-one-class   .analysis-count-badge { background: rgba(113,63,18,0.5); color: #fde68a; }
+
+    .card-cond        .analysis-card-header { background: rgba(31,41,55,0.5); }
+    .card-cond        .analysis-card-icon   { background: rgba(75,85,99,0.4); }
+    .card-cond        .analysis-count-badge { background: rgba(75,85,99,0.5); color: #d1d5db; }
+
+    .analysis-list {
+      padding: 12px 0;
+    }
+
+    .analysis-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .analysis-item:last-child { border-bottom: none; }
+
+    .analysis-day {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      min-width: 34px;
+      padding-top: 1px;
+    }
+
+    .analysis-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .analysis-block {
+      font-size: 0.74rem;
+      color: var(--text);
+    }
+
+    .analysis-block span {
+      color: var(--text-muted);
+      font-size: 0.68rem;
+    }
+
+    .analysis-empty {
+      padding: 16px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-style: italic;
+    }
+
+    /* Summary bar */
+    .summary-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+    }
+
+    .summary-stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .summary-stat-icon {
+      font-size: 16px;
+    }
+
+    .summary-stat-label { color: var(--text-muted); }
+    .summary-stat-value { font-weight: 700; color: var(--text); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      header { padding: 16px 12px 0; }
+      main { padding: 16px 10px 40px; }
+      .header-top { gap: 10px; }
+      .header-titles h1 { font-size: 1.1rem; }
+      .tab-btn { padding: 8px 12px; font-size: 0.78rem; }
+      .analysis-grid { grid-template-columns: 1fr; }
+      .summary-bar { flex-direction: column; gap: 8px; }
+      .legend { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-icon">🗓️</div>
+      <div class="header-titles">
+        <h1>Nicole &amp; Renato — Horarios 2026</h1>
+        <p>Kinesiología · Ingeniería Civil Ambiental (UFRO)</p>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn nicole active" data-tab="view-nicole">
+        🩺 Horario Nicole
+        <span class="badge" id="badge-nicole">—</span>
+      </button>
+      <button class="tab-btn renato" data-tab="view-renato">
+        ⚗️ Horario Renato
+        <span class="badge" id="badge-renato">—</span>
+      </button>
+      <button class="tab-btn joint" data-tab="view-conjunta">
+        🔀 Horario Conjunto
+        <span class="badge" id="badge-conjunta">—</span>
+      </button>
+      <button class="tab-btn analisis" data-tab="view-analisis">
+        📊 Análisis
+        <span class="badge" id="badge-analisis">—</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================
+       VISTA A — Nicole
+  ============================= -->
+  <section id="view-nicole" class="view active">
+    <div class="section-header">
+      <div class="dot" style="background: var(--n-clase)"></div>
+      <div>
+        <div class="section-title">Horario Nicole — Kinesiología</div>
+        <div class="section-subtitle">Clases confirmadas + Práctica variable</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--n-lab-bg);border:1px solid var(--n-lab)"></div> Laboratorio
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--n-tut-bg);border:1px solid var(--n-tut)"></div> Tutoría
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--n-clase-bg);border:1px solid var(--n-clase)"></div> Clase fija
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot n-prac"></div> Práctica (variable)
+      </div>
+    </div>
+
+    <div class="schedule-wrapper" id="table-nicole"></div>
+  </section>
+
+  <!-- ============================
+       VISTA B — Renato
+  ============================= -->
+  <section id="view-renato" class="view">
+    <div class="section-header">
+      <div class="dot" style="background: var(--r-clase)"></div>
+      <div>
+        <div class="section-title">Horario Renato — Ing. Civil Ambiental</div>
+        <div class="section-subtitle">UFRO · Semestre 2026/1</div>
+      </div>
+    </div>
+
+    <div class="schedule-wrapper" id="table-renato"></div>
+  </section>
+
+  <!-- ============================
+       VISTA C — Conjunta
+  ============================= -->
+  <section id="view-conjunta" class="view">
+    <div class="section-header">
+      <div class="dot" style="background: #a855f7"></div>
+      <div>
+        <div class="section-title">Horario Conjunto</div>
+        <div class="section-subtitle">Cada celda dividida: Nicole (izq.) | Renato (der.)</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot both-class"></div> Ambos con clase</div>
+      <div class="legend-item"><div class="legend-dot both-free"></div> Ambos libres</div>
+      <div class="legend-item"><div class="legend-dot one-class"></div> Uno con clase / otro libre</div>
+      <div class="legend-item"><div class="legend-dot cond"></div> Nicole práctica variable + Renato libre</div>
+    </div>
+
+    <div class="schedule-wrapper" id="table-conjunta"></div>
+  </section>
+
+  <!-- ============================
+       VISTA D — Análisis
+  ============================= -->
+  <section id="view-analisis" class="view">
+    <div class="section-header">
+      <div class="dot" style="background: #f59e0b"></div>
+      <div>
+        <div class="section-title">Análisis de Coincidencias</div>
+        <div class="section-subtitle">Resumen por tipo de bloque compartido</div>
+      </div>
+    </div>
+
+    <div class="summary-bar" id="summary-bar"></div>
+    <div class="analysis-grid" id="analysis-grid"></div>
+  </section>
+
+</main>
+
 <script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: '#0D8C75',
-        secondary: '#10B981',
-        accent: '#4FD1C7',
-        success: '#059669',
-      }
+/* =======================================================
+   DATOS
+======================================================= */
+
+const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+const DIAS_KEYS = ['lun', 'mar', 'mie', 'jue', 'vie'];
+
+const BLOQUES = [
+  { n: '1°', rango: '08:30–09:30' },
+  { n: '2°', rango: '09:40–10:40' },
+  { n: '3°', rango: '10:50–11:50' },
+  { n: '4°', rango: '12:00–13:00' },
+  { n: '—',  rango: '13:10–14:20', almuerzo: true },
+  { n: '5°', rango: '14:30–15:30' },
+  { n: '6°', rango: '15:40–16:40' },
+  { n: '7°', rango: '16:50–17:50' },
+  { n: '—',  rango: '18:00–19:00', vacio: true },
+  { n: '9°', rango: '19:10–20:10' },
+];
+
+/*
+  Tipo de celda:
+    "lab"     → laboratorio Nicole
+    "tut"     → tutoría Nicole
+    "clase"   → clase fija
+    "practica"→ práctica variable Nicole
+    "libre"   → sin actividad
+*/
+
+// Nicole: matriz [bloque_idx][dia_idx]  (bloques reales: 0-3, 5-7 → indices en BLOQUES)
+// Mapeamos los 7 bloques lectivos (0,1,2,3,5,6,7) + bloque nocturno 9 (idx 9)
+
+const NICOLE = {
+  /* bloque_num : { lun, mar, mie, jue, vie } */
+  0: { // 1° 08:30
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+    mar: { tipo:'tut',      nombre:'Tutoría' },
+    mie: { tipo:'clase',    nombre:'Bioestadística' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    vie: { tipo:'tut',      nombre:'Tutoría' },
+  },
+  1: { // 2°
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+    mar: { tipo:'tut',      nombre:'Tutoría' },
+    mie: { tipo:'clase',    nombre:'Bioestadística' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    vie: { tipo:'tut',      nombre:'Tutoría' },
+  },
+  2: { // 3°
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+    mar: { tipo:'tut',      nombre:'Tutoría' },
+    mie: { tipo:'clase',    nombre:'Bioestadística' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    vie: { tipo:'tut',      nombre:'Tutoría' },
+  },
+  3: { // 4°
+    lun: { tipo:'clase',    nombre:'Psicología' },
+    mar: { tipo:'clase',    nombre:'Seminario/Taller', sala:'S-202' },
+    mie: { tipo:'practica', nombre:'Práctica (variable)' },
+    jue: { tipo:'practica', nombre:'Práctica (variable)' },
+    vie: { tipo:'clase',    nombre:'Seminario/Taller', sala:'Prat-201' },
+  },
+  5: { // 5°
+    lun: { tipo:'clase',    nombre:'Seminario Biomecánica', sala:'S-202' },
+    mar: { tipo:'practica', nombre:'Práctica (variable)' },
+    mie: { tipo:'clase',    nombre:'Física', sala:'CF-110' },
+    jue: { tipo:'practica', nombre:'Práctica (variable)' },
+    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+  },
+  6: { // 6°
+    lun: { tipo:'clase',    nombre:'Seminario Biomecánica', sala:'S-202' },
+    mar: { tipo:'practica', nombre:'Práctica (variable)' },
+    mie: { tipo:'clase',    nombre:'Neuroanatomía' },
+    jue: { tipo:'practica', nombre:'Práctica (variable)' },
+    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+  },
+  7: { // 7°
+    lun: { tipo:'libre',    nombre:'' },
+    mar: { tipo:'practica', nombre:'Práctica (variable)' },
+    mie: { tipo:'clase',    nombre:'Neuroanatomía' },
+    jue: { tipo:'practica', nombre:'Práctica (variable)' },
+    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+  },
+  9: { // 9° nocturno
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+};
+
+const RENATO = {
+  0: {
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  1: {
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  2: {
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
+    mie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2004' },
+    jue: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-1004' },
+    vie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2001' },
+  },
+  3: {
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'clase', nombre:'Álgebra', sala:'R-103' },
+    mie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2004' },
+    jue: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-1004' },
+    vie: { tipo:'clase', nombre:'Fund. Cálculo', sala:'RA-2001' },
+  },
+  5: {
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'clase', nombre:'Álgebra', sala:'RA-1002' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  6: {
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205' },
+    mar: { tipo:'clase', nombre:'Álgebra', sala:'RA-1002' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  7: {
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'clase', nombre:'Ing. y Sociedad', sala:'VIR-201-FICA' },
+  },
+  9: {
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Hab. Com. Inglés', sala:'VIR-204' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+};
+
+/* =======================================================
+   HELPERS
+======================================================= */
+
+const BLOQUE_TO_IDX = { 0:0, 1:1, 2:2, 3:3, 5:5, 6:6, 7:7, 9:9 };
+
+function getCellN(bloqueN, diaKey) {
+  return (NICOLE[bloqueN] && NICOLE[bloqueN][diaKey]) || { tipo:'libre', nombre:'' };
+}
+
+function getCellR(bloqueN, diaKey) {
+  return (RENATO[bloqueN] && RENATO[bloqueN][diaKey]) || { tipo:'libre', nombre:'' };
+}
+
+function isActive(c) { return c.tipo !== 'libre'; }
+function isConfirmed(c) { return c.tipo !== 'libre' && c.tipo !== 'practica'; }
+function isPractica(c) { return c.tipo === 'practica'; }
+
+/* Determine joint state */
+function jointState(cn, cr) {
+  const nActive = isActive(cn);
+  const rActive = isActive(cr);
+  const nConf   = isConfirmed(cn);
+  const rConf   = isConfirmed(cr);
+
+  if (nConf && rConf)               return 'both-class';
+  if (!nActive && !rActive)         return 'both-free';
+  if (isPractica(cn) && !rActive)   return 'cond';
+  return 'one-class';
+}
+
+/* =======================================================
+   RENDER helpers
+======================================================= */
+
+function cellNicole(c) {
+  if (c.tipo === 'libre') return `<div class="cell libre">—</div>`;
+  let cls = 'cell ';
+  if (c.tipo === 'lab')      cls += 'n-lab';
+  else if (c.tipo === 'tut') cls += 'n-tut';
+  else if (c.tipo === 'practica') cls += 'n-prac';
+  else cls += 'n-clase';
+  const sala = c.sala ? `<span class="cell-room">${c.sala}</span>` : '';
+  const tag  = c.tag  ? `<span class="cell-tag">${c.tag}</span>` : '';
+  return `<div class="${cls}"><span class="cell-name">${c.nombre}</span>${sala}${tag}</div>`;
+}
+
+function cellRenato(c) {
+  if (c.tipo === 'libre') return `<div class="cell libre">—</div>`;
+  const sala = c.sala ? `<span class="cell-room">${c.sala}</span>` : '';
+  return `<div class="cell r-clase"><span class="cell-name">${c.nombre}</span>${sala}</div>`;
+}
+
+function halfNicole(c, state) {
+  const name = c.tipo === 'libre' ? '—' : c.nombre;
+  const room = (!c.sala || c.tipo === 'libre') ? '' : `<div class="joint-half-room">${c.sala}</div>`;
+  return `
+    <div class="joint-half">
+      <div class="joint-half-label">Nicole</div>
+      <div class="joint-half-name">${name}</div>
+      ${room}
+    </div>`;
+}
+
+function halfRenato(c, state) {
+  const name = c.tipo === 'libre' ? '—' : c.nombre;
+  const room = (!c.sala || c.tipo === 'libre') ? '' : `<div class="joint-half-room">${c.sala}</div>`;
+  return `
+    <div class="joint-half">
+      <div class="joint-half-label">Renato</div>
+      <div class="joint-half-name">${name}</div>
+      ${room}
+    </div>`;
+}
+
+function buildTable(getData, renderCell, includeNocturno) {
+  const bloquesList = [0,1,2,3,5,6,7];
+  if (includeNocturno) bloquesList.push(9);
+
+  let rows = '';
+  let prevBloqueNum = -1;
+
+  for (const bn of bloquesList) {
+    // Insert lunch spacer after bloque 3
+    if (prevBloqueNum === 3) {
+      rows += `
+        <tr class="lunch-row">
+          <td colspan="${DIAS.length + 1}">
+            <div class="lunch-label">🍽 Almuerzo — 13:10–14:20</div>
+          </td>
+        </tr>`;
+    }
+    // Insert visual gap before nocturno
+    if (bn === 9) {
+      rows += `
+        <tr class="lunch-row">
+          <td colspan="${DIAS.length + 1}">
+            <div class="lunch-label">— — —</div>
+          </td>
+        </tr>`;
+    }
+
+    const bloq = BLOQUES.find(b => b.n === `${bn}°`) ||
+                 (bn === 9 ? { n:'9°', rango:'19:10–20:10' } : null);
+    const rangoStr = bloq ? bloq.rango : '';
+
+    let tds = '';
+    for (const dk of DIAS_KEYS) {
+      const c = getData(bn, dk);
+      tds += `<td>${renderCell(c)}</td>`;
+    }
+
+    rows += `
+      <tr>
+        <td>
+          <div class="time-block">
+            <span class="time-num">Bloque ${bn}°</span>
+            <span class="time-range">${rangoStr}</span>
+          </div>
+        </td>
+        ${tds}
+      </tr>`;
+
+    prevBloqueNum = bn;
+  }
+
+  return `
+    <table class="schedule">
+      <thead>
+        <tr>
+          <th class="time-col">Bloque / Hora</th>
+          ${DIAS.map(d => `<th>${d}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function buildJointTable() {
+  const bloquesList = [0,1,2,3,5,6,7,9];
+  let rows = '';
+  let prevBloqueNum = -1;
+
+  for (const bn of bloquesList) {
+    if (prevBloqueNum === 3) {
+      rows += `
+        <tr class="lunch-row">
+          <td colspan="${DIAS.length + 1}">
+            <div class="lunch-label">🍽 Almuerzo — 13:10–14:20</div>
+          </td>
+        </tr>`;
+    }
+    if (bn === 9) {
+      rows += `
+        <tr class="lunch-row">
+          <td colspan="${DIAS.length + 1}">
+            <div class="lunch-label">— — —</div>
+          </td>
+        </tr>`;
+    }
+
+    const bloq = bn === 9
+      ? { rango:'19:10–20:10' }
+      : BLOQUES.find(b => b.n === `${bn}°`);
+    const rangoStr = bloq ? bloq.rango : '';
+
+    let tds = '';
+    for (const dk of DIAS_KEYS) {
+      const cn = getCellN(bn, dk);
+      const cr = getCellR(bn, dk);
+      const state = jointState(cn, cr);
+      const cls = `joint-cell state-${state}`;
+      tds += `<td><div class="${cls}">${halfNicole(cn, state)}${halfRenato(cr, state)}</div></td>`;
+    }
+
+    rows += `
+      <tr>
+        <td>
+          <div class="time-block">
+            <span class="time-num">Bloque ${bn}°</span>
+            <span class="time-range">${rangoStr}</span>
+          </div>
+        </td>
+        ${tds}
+      </tr>`;
+
+    prevBloqueNum = bn;
+  }
+
+  return `
+    <table class="schedule">
+      <thead>
+        <tr>
+          <th class="time-col">Bloque / Hora</th>
+          ${DIAS.map(d => `<th>${d}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+/* =======================================================
+   ANALYSIS
+======================================================= */
+
+function buildAnalysis() {
+  const cats = {
+    'both-class': { label:'Ambos con clase',                     icon:'🟢', key:'card-both-class', items:[] },
+    'both-free':  { label:'Ambos libres',                        icon:'🔴', key:'card-both-free',  items:[] },
+    'one-class':  { label:'Uno con clase, otro libre',           icon:'🟡', key:'card-one-class',  items:[] },
+    'cond':       { label:'Nicole práctica variable + Renato libre', icon:'🌫️', key:'card-cond', items:[] },
+  };
+
+  const bloquesList = [0,1,2,3,5,6,7,9];
+  const bloqRangos = {
+    0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
+    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 9:'19:10–20:10',
+  };
+
+  for (const dk of DIAS_KEYS) {
+    for (const bn of bloquesList) {
+      const cn = getCellN(bn, dk);
+      const cr = getCellR(bn, dk);
+      const state = jointState(cn, cr);
+      const diaLabel = DIAS[DIAS_KEYS.indexOf(dk)];
+      const entry = {
+        dia: diaLabel,
+        bloque: bn,
+        rango: bloqRangos[bn],
+        cn, cr,
+      };
+      if (cats[state]) cats[state].items.push(entry);
     }
   }
-}
-</script>
 
-<style>
-* { 
-  font-family: 'Inter', sans-serif; 
-  -webkit-tap-highlight-color: transparent;
-}
-
-.day-cell { 
-  transition: all 200ms ease-in-out; 
-  user-select: none;
-}
-
-.day-cell:active { 
-  transform: scale(0.95); 
-}
-
-@media (hover: hover) {
-  .day-cell:hover { 
-    transform: scale(1.05); 
+  // Group by day
+  function groupByDay(items) {
+    const map = {};
+    for (const it of items) {
+      if (!map[it.dia]) map[it.dia] = [];
+      map[it.dia].push(it);
+    }
+    return map;
   }
+
+  function renderCard(state, cat) {
+    const grouped = groupByDay(cat.items);
+    let listHTML = '';
+    for (const dia of DIAS) {
+      if (!grouped[dia]) continue;
+      const blocks = grouped[dia].map(it => {
+        let detail = '';
+        if (state === 'both-class') {
+          detail = `${it.cn.nombre} | ${it.cr.nombre}`;
+        } else if (state === 'both-free') {
+          detail = 'Libres los dos';
+        } else if (state === 'one-class') {
+          const who = isActive(it.cn)
+            ? `Nicole: ${it.cn.nombre}`
+            : `Renato: ${it.cr.nombre}`;
+          detail = who;
+        } else if (state === 'cond') {
+          detail = `Nicole: Práctica variable — Renato libre`;
+        }
+        return `<div class="analysis-block">Bloque ${it.bloque}° <span>(${it.rango})</span> — ${detail}</div>`;
+      }).join('');
+
+      listHTML += `
+        <div class="analysis-item">
+          <div class="analysis-day">${dia.substring(0,3)}</div>
+          <div class="analysis-blocks">${blocks}</div>
+        </div>`;
+    }
+
+    if (!listHTML) {
+      listHTML = `<div class="analysis-empty">Sin bloques en esta categoría</div>`;
+    }
+
+    return `
+      <div class="analysis-card ${cat.key}">
+        <div class="analysis-card-header">
+          <div class="analysis-card-title">
+            <div class="analysis-card-icon">${cat.icon}</div>
+            ${cat.label}
+          </div>
+          <span class="analysis-count-badge">${cat.items.length} bloques</span>
+        </div>
+        <div class="analysis-list">${listHTML}</div>
+      </div>`;
+  }
+
+  let grid = '';
+  for (const [state, cat] of Object.entries(cats)) {
+    grid += renderCard(state, cat);
+  }
+
+  return { grid, cats };
 }
 
-@keyframes slide-up {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+/* =======================================================
+   BADGES
+======================================================= */
+
+function countNicoleClases() {
+  let n = 0;
+  for (const bn of [0,1,2,3,5,6,7,9]) {
+    for (const dk of DIAS_KEYS) {
+      if (isActive(getCellN(bn, dk))) n++;
+    }
+  }
+  return n;
 }
 
-.animate-slide-up { 
-  animation: slide-up 0.3s ease-out; 
+function countRenatoClases() {
+  let n = 0;
+  for (const bn of [0,1,2,3,5,6,7,9]) {
+    for (const dk of DIAS_KEYS) {
+      if (isActive(getCellR(bn, dk))) n++;
+    }
+  }
+  return n;
 }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+/* =======================================================
+   INIT
+======================================================= */
 
-.animate-fade-in { 
-  animation: fade-in 0.2s ease-out; 
-}
+document.addEventListener('DOMContentLoaded', () => {
 
-.sidebar-enter {
-  animation: slide-up 0.3s ease-out;
-}
-</style>
-</head>
-<body class="h-full bg-gradient-to-br from-slate-50 to-teal-50 antialiased">
+  // Render tables
+  document.getElementById('table-nicole').innerHTML =
+    buildTable(getCellN, cellNicole, false);
 
-<div class="min-h-screen max-w-md mx-auto bg-white shadow-2xl flex flex-col">
-  
-  <!-- HEADER FIJO -->
-  <div class="sticky top-0 z-50 bg-gradient-to-r from-primary to-teal-600 shadow-lg">
-    <div class="px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-          <i data-lucide="calendar-days" class="w-6 h-6 text-white"></i>
-        </div>
-        <div>
-          <h1 class="text-white font-bold text-lg leading-tight">Horario Pro</h1>
-          <p class="text-teal-100 text-xs font-medium">Febrero 2026</p>
-        </div>
-      </div>
-      <button onclick="toggleEdit()" id="editBtn" class="p-2 hover:bg-white/10 rounded-lg transition-colors active:bg-white/20">
-        <i data-lucide="pencil" class="w-5 h-5 text-white"></i>
-      </button>
+  document.getElementById('table-renato').innerHTML =
+    buildTable(getCellR, cellRenato, true);
+
+  document.getElementById('table-conjunta').innerHTML =
+    buildJointTable();
+
+  // Analysis
+  const { grid, cats } = buildAnalysis();
+  document.getElementById('analysis-grid').innerHTML = grid;
+
+  // Summary bar
+  const bothFree = cats['both-free'].items.length;
+  const bothClass = cats['both-class'].items.length;
+  const cond = cats['cond'].items.length;
+  const oneClass = cats['one-class'].items.length;
+
+  document.getElementById('summary-bar').innerHTML = `
+    <div class="summary-stat">
+      <span class="summary-stat-icon">🟢</span>
+      <span class="summary-stat-label">Ambos con clase:</span>
+      <span class="summary-stat-value">${bothClass} bloques</span>
     </div>
-    
-    <!-- SELECTOR USUARIO -->
-    <div class="px-4 pb-3">
-      <div class="relative">
-        <select id="userSelect" onchange="cambiarUsuario()" class="w-full bg-white/95 backdrop-blur-sm text-gray-800 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-white/50 appearance-none cursor-pointer">
-          <option value="Renato  Fuentes">👤 Renato Fuentes</option>
-          <option value="Valentina  Obando">👤 Valentina Obando</option>
-          <option value="Diego  Salinas">👤 Diego Salinas</option>
-          <option value="Daniela Illanes">👤 Daniela Illanes</option>
-          <option value="Krishna Olea">👤 Krishna Olea</option>
-          <option value="Jose Villagra (reemplazo)">👤 Jose Villagra</option>
-          <option value="Viviana Medina">👤 Viviana Medina</option>
-          <option value="Alejandro Calfuman">👤 Alejandro Calfuman</option>
-          <option value="Daniela Cheuquenao">👤 Daniela Cheuquenao</option>
-          <option value="Diego  Martínez">👤 Diego Martínez</option>
-          <option value="Juan  Chávez">👤 Juan Chávez</option>
-          <option value="Rocio Álvarez">👤 Rocio Álvarez</option>
-          <option value="Alexis Ladino">👤 Alexis Ladino</option>
-          <option value="Yuliana Obando">👤 Yuliana Obando</option>
-          <option value="Catalina Pedreros">👤 Catalina Pedreros</option>
-          <option value="Catalina Sepúlveda">👤 Catalina Sepúlveda</option>
-          <option value="Escarlet  Rozas">👤 Escarlet Rozas</option>
-          <option value="Enzo Oliva">👤 Enzo Oliva</option>
-          <option value="Pamela Figueroa">👤 Pamela Figueroa</option>
-          <option value="José Ortiz">👤 José Ortiz</option>
-          <option value="Maria Jesús Rozas">👤 Maria Jesús Rozas</option>
-          <option value="Catalina Sandoval">👤 Catalina Sandoval</option>
-        </select>
-        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-      </div>
+    <div class="summary-stat">
+      <span class="summary-stat-icon">🔴</span>
+      <span class="summary-stat-label">Libres juntos:</span>
+      <span class="summary-stat-value">${bothFree} bloques</span>
     </div>
-
-    <!-- BADGE DÍA ACTUAL -->
-    <div class="px-4 pb-3">
-      <div class="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-sm">
-        <i data-lucide="calendar" class="w-4 h-4 text-primary"></i>
-        <span class="text-sm font-bold text-gray-800">HOY: DÍA 4 MIÉRCOLES</span>
-      </div>
+    <div class="summary-stat">
+      <span class="summary-stat-icon">🌫️</span>
+      <span class="summary-stat-label">Posible libre juntos:</span>
+      <span class="summary-stat-value">${cond} bloques</span>
     </div>
-  </div>
+    <div class="summary-stat">
+      <span class="summary-stat-icon">🟡</span>
+      <span class="summary-stat-label">Uno con clase:</span>
+      <span class="summary-stat-value">${oneClass} bloques</span>
+    </div>`;
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <div class="flex-1 overflow-auto">
-    
-    <!-- LEYENDA -->
-    <div class="px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-gray-200">
-      <div class="flex flex-wrap gap-3 justify-center text-xs">
-        <div class="flex items-center gap-1.5">
-          <div class="w-3 h-3 rounded bg-accent shadow-sm"></div>
-          <span class="font-semibold text-gray-700">AM</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <div class="w-3 h-3 rounded bg-secondary shadow-sm"></div>
-          <span class="font-semibold text-gray-700">PM</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <div class="w-3 h-3 rounded bg-slate-300 shadow-sm"></div>
-          <span class="font-semibold text-gray-700">LIBRE</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <div class="w-3 h-3 rounded bg-yellow-300 shadow-sm"></div>
-          <span class="font-semibold text-gray-700">VAC</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <div class="w-3 h-3 rounded bg-red-400 shadow-sm"></div>
-          <span class="font-semibold text-gray-700">FULL</span>
-        </div>
-      </div>
-    </div>
+  // Badges
+  document.getElementById('badge-nicole').textContent   = `${countNicoleClases()} bloques`;
+  document.getElementById('badge-renato').textContent   = `${countRenatoClases()} bloques`;
+  document.getElementById('badge-conjunta').textContent = `${DIAS.length * 8} celdas`;
+  document.getElementById('badge-analisis').textContent = `Libres juntos: ${bothFree + cond}`;
 
-    <!-- CALENDARIO -->
-    <div class="p-4">
-      <!-- Headers días -->
-      <div class="grid grid-cols-7 gap-1 mb-2">
-        <div class="text-center text-xs font-bold text-primary">D</div>
-        <div class="text-center text-xs font-bold text-primary">L</div>
-        <div class="text-center text-xs font-bold text-primary">M</div>
-        <div class="text-center text-xs font-bold text-primary">M</div>
-        <div class="text-center text-xs font-bold text-primary">J</div>
-        <div class="text-center text-xs font-bold text-primary">V</div>
-        <div class="text-center text-xs font-bold text-primary">S</div>
-      </div>
-      
-      <!-- Grid días -->
-      <div id="calGrid" class="grid grid-cols-7 gap-1"></div>
-    </div>
+  // Tabs
+  const tabs = document.querySelectorAll('.tab-btn');
+  const views = document.querySelectorAll('.view');
 
-    <!-- SIDEBAR COINCIDENCIAS ELIMINADO (reemplazado por modal de detalle) -->
-  </div>
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      views.forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
 
-  <!-- FOOTER UPLOAD -->
-  <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-    <button onclick="uploadExcel()" class="w-full bg-gradient-to-r from-primary to-teal-600 hover:from-teal-700 hover:to-primary active:scale-95 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2">
-      <i data-lucide="upload" class="w-5 h-5"></i>
-      <span>Cargar Excel</span>
-    </button>
-  </div>
-</div>
-
-<!-- MODAL DETALLE DÍA -->
-<div id="dayModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end justify-center animate-fade-in" role="dialog" aria-modal="true" onclick="cerrarDetalleDia()">
-  <div class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
-    <div id="dayModalContent"></div>
-  </div>
-</div>
-
-<!-- MODAL EDICIÓN -->
-<div id="editModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end justify-center animate-fade-in">
-  <div class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl animate-slide-up" onclick="event.stopPropagation()">
-    <div class="p-4 border-b border-gray-200">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="font-bold text-lg text-gray-800" id="editTitle">Editar Día</h3>
-        <button onclick="cerrarEdit()" class="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors">
-          <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
-        </button>
-      </div>
-    </div>
-    <div class="p-4">
-      <label class="block text-sm font-semibold text-gray-700 mb-2">Seleccionar Turno</label>
-      <select id="editTurno" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-        <option value="AM">☀️ Mañana (AM)</option>
-        <option value="PM">🌙 Tarde (PM)</option>
-        <option value="LIBRE">🏖️ Día Libre</option>
-        <option value="VAC">🏝️ Vacaciones</option>
-        <option value="FULL">👥 Jornada Completa</option>
-      </select>
-      <button onclick="guardarEdit()" class="w-full mt-4 bg-primary hover:bg-teal-700 active:scale-95 text-white font-bold py-3 rounded-lg transition-all shadow-md">
-        Guardar Cambios
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- JavaScript -->
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-
+});
+</script>
 </body>
 </html>
