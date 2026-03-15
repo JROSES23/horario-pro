@@ -3,605 +3,748 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparador de Horarios — Nicole & Renato</title>
+  <title>Horarios 2026 — Nicole &amp; Renato</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    /* ===== VARIABLES ===== */
-    :root {
-      --bg:          #0f0f0f;
-      --surface:     #1a1a1a;
-      --surface2:    #111827;
-      --border:      #2a2a2a;
-      --border2:     #374151;
-      --text:        #f3f4f6;
-      --text-muted:  #9ca3af;
-      --text-dim:    #6b7280;
-
-      /* Nicole palette */
-      --n-lab:       #0d9488;
-      --n-lab-bg:    #042f2e;
-      --n-clase:     #14b8a6;
-      --n-clase-bg:  #042f2e;
-      --n-prac:      #f97316;
-      --n-prac-bg:   #2c1600;
-      --n-tut:       #22c55e;
-      --n-tut-bg:    #052e16;
-
-      /* Renato palette */
-      --r-clase:     #6366f1;
-      --r-clase-bg:  #1e1b4b;
-
-      /* States */
-      --both-class:  #166534;
-      --both-free:   #7f1d1d;
-      --one-class:   #713f12;
-      --cond-free:   #1f2937;
-
-      /* Tab active */
-      --tab-active:  #6366f1;
-
-      --radius: 10px;
-      --radius-sm: 6px;
-      --transition: 0.25s ease;
-    }
-
-    /* ===== RESET ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.5;
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
-      border-bottom: 1px solid var(--border2);
-      padding: 24px 20px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header-top {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .header-icon {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--n-clase), var(--r-clase));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-
-    .header-titles h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      background: linear-gradient(90deg, var(--n-clase), var(--r-clase));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header-titles p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 400;
-      margin-top: 2px;
-    }
-
-    /* ===== TABS ===== */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-
-    .tab-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      transition: color var(--transition), border-color var(--transition);
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    }
-
-    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-
-    .tab-btn.active {
-      color: var(--text);
-      border-bottom-color: var(--tab-active);
-    }
-
-    .tab-btn.nicole.active { border-bottom-color: var(--n-clase); }
-    .tab-btn.renato.active  { border-bottom-color: var(--r-clase); }
-    .tab-btn.joint.active   { border-bottom-color: #a855f7; }
-    .tab-btn.analisis.active { border-bottom-color: #f59e0b; }
-
-    .badge {
-      background: var(--border2);
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 99px;
-      transition: background var(--transition), color var(--transition);
-    }
-
-    .tab-btn.active .badge {
-      background: rgba(99,102,241,0.25);
-      color: #a5b4fc;
-    }
-    .tab-btn.nicole.active .badge { background: rgba(20,184,166,0.2); color: var(--n-clase); }
-    .tab-btn.renato.active .badge  { background: rgba(99,102,241,0.2); color: #a5b4fc; }
-    .tab-btn.joint.active .badge   { background: rgba(168,85,247,0.2); color: #d8b4fe; }
-    .tab-btn.analisis.active .badge { background: rgba(245,158,11,0.2); color: #fcd34d; }
-
-    /* ===== MAIN ===== */
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 28px 16px 60px;
-    }
-
-    /* ===== VIEWS ===== */
-    .view {
-      display: none;
-      animation: fadeIn 0.25s ease;
-    }
-    .view.active { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== SECTION TITLE ===== */
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .section-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ===== SCHEDULE TABLE ===== */
-    .schedule-wrapper {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-
-    table.schedule {
-      width: 100%;
-      min-width: 680px;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-    }
-
-    table.schedule th,
-    table.schedule td {
-      border: 1px solid var(--border);
-      padding: 0;
-      vertical-align: top;
-    }
-
-    table.schedule th {
-      background: var(--surface2);
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 10px 12px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    table.schedule th.time-col {
-      color: var(--text-dim);
-      min-width: 90px;
-      text-align: left;
-    }
-
-    .time-block {
-      display: flex;
-      flex-direction: column;
-      padding: 8px 10px;
-      gap: 1px;
-    }
-
-    .time-num {
-      font-weight: 700;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .time-range {
-      font-size: 0.65rem;
-      color: var(--text-dim);
-    }
-
-    /* ===== CELLS ===== */
-    .cell {
-      padding: 8px 10px;
-      min-height: 56px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 3px;
-    }
-
-    .cell-name {
-      font-weight: 600;
-      line-height: 1.3;
-      font-size: 0.76rem;
-    }
-
-    .cell-room {
-      font-size: 0.67rem;
-      opacity: 0.7;
-      font-weight: 400;
-    }
-
-    .cell-tag {
-      font-size: 0.62rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      opacity: 0.75;
-    }
-
-    /* Cell type styles — Nicole */
-    .n-lab    { background: var(--n-lab-bg);   color: #5eead4; }
-    .n-clase  { background: var(--n-clase-bg); color: #99f6e4; }
-    .n-tut    { background: var(--n-tut-bg);   color: #86efac; }
-    .n-prac   {
-      background: var(--n-prac-bg);
-      color: #fdba74;
-      background-image: repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 4px,
-        rgba(249,115,22,0.08) 4px,
-        rgba(249,115,22,0.08) 8px
-      );
-      border: 1px dashed rgba(249,115,22,0.4) !important;
-    }
-
-    /* Cell type styles — Renato */
-    .r-clase  { background: var(--r-clase-bg); color: #a5b4fc; }
-
-    /* Free cell */
-    .libre    {
-      background: transparent;
-      color: var(--text-dim);
-      font-size: 0.7rem;
-      font-style: italic;
-      min-height: 56px;
-    }
-
-    /* Lunch row */
-    .lunch-row td {
-      background: #0a0a0a;
-      padding: 8px 12px;
-    }
-
-    .lunch-label {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      font-style: italic;
-      text-align: center;
-    }
-
-    /* ===== JOINT VIEW ===== */
-    .joint-cell {
-      min-height: 56px;
-      display: flex;
-      flex-direction: row;
-    }
-
-    .joint-half {
-      flex: 1;
-      padding: 6px 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2px;
-      font-size: 0.7rem;
-    }
-
-    .joint-half:first-child {
-      border-right: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .joint-half-label {
-      font-size: 0.58rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      opacity: 0.6;
-      margin-bottom: 2px;
-    }
-
-    .joint-half-name {
-      font-weight: 600;
-      line-height: 1.3;
-      font-size: 0.72rem;
-    }
-
-    .joint-half-room {
-      font-size: 0.62rem;
-      opacity: 0.65;
-    }
-
-    /* Joint state backgrounds */
-    .state-both-class  { background: rgba(22,101,52,0.35); }
-    .state-both-free   { background: rgba(127,29,29,0.25); }
-    .state-one-class   { background: rgba(113,63,18,0.3); }
-    .state-cond        { background: rgba(31,41,55,0.6); background-image: repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(156,163,175,0.05) 5px,rgba(156,163,175,0.05) 10px); }
-
-    .state-both-class .joint-half-name  { color: #86efac; }
-    .state-both-class .joint-half-room  { color: #4ade80; }
-    .state-both-free  .joint-half       { color: #fca5a5; }
-    .state-one-class  .joint-half-name  { color: #fde68a; }
-    .state-cond       .joint-half       { color: var(--text-muted); }
-
-    /* Legend */
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-
-    .legend-dot.both-class { background: rgba(22,101,52,0.6); border: 1px solid #16a34a; }
-    .legend-dot.both-free  { background: rgba(127,29,29,0.5); border: 1px solid #dc2626; }
-    .legend-dot.one-class  { background: rgba(113,63,18,0.5); border: 1px solid #d97706; }
-    .legend-dot.cond       { background: rgba(31,41,55,0.8); border: 1px dashed #4b5563; }
-    .legend-dot.n-prac     { background: var(--n-prac-bg); border: 1px dashed rgba(249,115,22,0.5); }
-
-    /* ===== ANALYSIS VIEW ===== */
-    .analysis-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    .analysis-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .analysis-card-header {
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .analysis-card-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .analysis-card-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-    }
-
-    .analysis-count-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 99px;
-    }
-
-    .card-both-class  .analysis-card-header { background: rgba(22,101,52,0.2); }
-    .card-both-class  .analysis-card-icon   { background: rgba(22,101,52,0.4); }
-    .card-both-class  .analysis-count-badge { background: rgba(22,101,52,0.5); color: #86efac; }
-
-    .card-both-free   .analysis-card-header { background: rgba(127,29,29,0.2); }
-    .card-both-free   .analysis-card-icon   { background: rgba(127,29,29,0.4); }
-    .card-both-free   .analysis-count-badge { background: rgba(127,29,29,0.5); color: #fca5a5; }
-
-    .card-one-class   .analysis-card-header { background: rgba(113,63,18,0.2); }
-    .card-one-class   .analysis-card-icon   { background: rgba(113,63,18,0.4); }
-    .card-one-class   .analysis-count-badge { background: rgba(113,63,18,0.5); color: #fde68a; }
-
-    .card-cond        .analysis-card-header { background: rgba(31,41,55,0.5); }
-    .card-cond        .analysis-card-icon   { background: rgba(75,85,99,0.4); }
-    .card-cond        .analysis-count-badge { background: rgba(75,85,99,0.5); color: #d1d5db; }
-
-    .analysis-list {
-      padding: 12px 0;
-    }
-
-    .analysis-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .analysis-item:last-child { border-bottom: none; }
-
-    .analysis-day {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      min-width: 34px;
-      padding-top: 1px;
-    }
-
-    .analysis-blocks {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      flex: 1;
-    }
-
-    .analysis-block {
-      font-size: 0.74rem;
-      color: var(--text);
-    }
-
-    .analysis-block span {
-      color: var(--text-muted);
-      font-size: 0.68rem;
-    }
-
-    .analysis-empty {
-      padding: 16px;
-      text-align: center;
-      color: var(--text-dim);
-      font-size: 0.78rem;
-      font-style: italic;
-    }
-
-    /* Summary bar */
-    .summary-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      margin-bottom: 24px;
-    }
-
-    .summary-stat {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-    }
-
-    .summary-stat-icon {
-      font-size: 16px;
-    }
-
-    .summary-stat-label { color: var(--text-muted); }
-    .summary-stat-value { font-weight: 700; color: var(--text); }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 600px) {
-      header { padding: 16px 12px 0; }
-      main { padding: 16px 10px 40px; }
-      .header-top { gap: 10px; }
-      .header-titles h1 { font-size: 1.1rem; }
-      .tab-btn { padding: 8px 12px; font-size: 0.78rem; }
-      .analysis-grid { grid-template-columns: 1fr; }
-      .summary-bar { flex-direction: column; gap: 8px; }
-      .legend { gap: 8px; }
-    }
+  /* =========================================================
+     DESIGN TOKENS
+  ========================================================= */
+  :root {
+    /* Background */
+    --bg-a: #eef2ff;
+    --bg-b: #f5f0ff;
+    --bg-c: #eff9ff;
+
+    /* Glass surfaces */
+    --glass-heavy:  rgba(255, 255, 255, 0.80);
+    --glass-mid:    rgba(255, 255, 255, 0.65);
+    --glass-light:  rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.70);
+    --divider:      rgba(15, 23, 42, 0.06);
+
+    /* Text */
+    --text-primary:  #0f172a;
+    --text-secondary:#475569;
+    --text-tertiary: #94a3b8;
+    --text-faint:    #cbd5e1;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(15,23,42,0.05);
+    --shadow-sm: 0 1px 3px rgba(15,23,42,0.07), 0 2px 8px rgba(15,23,42,0.04);
+    --shadow-md: 0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+
+    /* Blur */
+    --blur-xs: blur(8px);
+    --blur-sm: blur(14px);
+    --blur-lg: blur(24px);
+
+    /* Radius */
+    --r-xs:  6px;
+    --r-sm:  10px;
+    --r-md:  14px;
+    --r-lg:  18px;
+    --r-xl:  24px;
+
+    /* Spacing */
+    --transition: 0.18s ease;
+
+    /* ── Nicole subject palette (soft, light) ── */
+    --n-lab-bg:   rgba(236,254,255,0.92); --n-lab-text:   #0e7490; --n-lab-bdr:  rgba(6,182,212,0.22);
+    --n-tut-bg:   rgba(240,253,244,0.92); --n-tut-text:   #15803d; --n-tut-bdr:  rgba(34,197,94,0.22);
+    --n-cls-bg:   rgba(240,253,250,0.92); --n-cls-text:   #0f766e; --n-cls-bdr:  rgba(20,184,166,0.22);
+    --n-prc-bg:   rgba(255,247,237,0.92); --n-prc-text:   #c2410c; --n-prc-bdr:  rgba(249,115,22,0.30);
+
+    /* ── Renato subject palette (soft, light) ── */
+    --r-alg-bg:   rgba(238,242,255,0.92); --r-alg-text:   #4338ca; --r-alg-bdr:  rgba(99,102,241,0.20);
+    --r-cal-bg:   rgba(245,243,255,0.92); --r-cal-text:   #6d28d9; --r-cal-bdr:  rgba(139,92,246,0.20);
+    --r-qui-bg:   rgba(240,253,244,0.92); --r-qui-text:   #047857; --r-qui-bdr:  rgba(16,185,129,0.20);
+    --r-soc-bg:   rgba(255,251,235,0.92); --r-soc-text:   #92400e; --r-soc-bdr:  rgba(245,158,11,0.22);
+    --r-ing-bg:   rgba(255,241,242,0.92); --r-ing-text:   #9f1239; --r-ing-bdr:  rgba(244,63,94,0.20);
+
+    /* ── Joint-view state colors ── */
+    --s-both-cls:   rgba(220,252,231,0.75);  --s-both-cls-bdr: rgba(34,197,94,0.22);
+    --s-both-free:  rgba(248,250,252,0.50);  --s-both-free-bdr:rgba(148,163,184,0.12);
+    --s-one-cls:    rgba(254,252,232,0.75);  --s-one-cls-bdr:  rgba(234,179,8,0.22);
+    --s-cond:       rgba(255,237,213,0.65);  --s-cond-bdr:     rgba(249,115,22,0.20);
+  }
+
+  /* =========================================================
+     RESET
+  ========================================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 50%, var(--bg-c) 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* =========================================================
+     HEADER
+  ========================================================= */
+  header {
+    background: var(--glass-heavy);
+    backdrop-filter: var(--blur-lg);
+    -webkit-backdrop-filter: var(--blur-lg);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-xs);
+    padding: 18px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner { max-width: 1200px; margin: 0 auto; }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .header-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border-radius: var(--r-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.30);
+    letter-spacing: -0.5px;
+  }
+
+  .header-titles h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  .header-titles p {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+
+  /* ── Tab navigation ── */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: rgba(15,23,42,0.05);
+    border-radius: var(--r-sm) var(--r-sm) 0 0;
+    padding: 3px 3px 0;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--r-xs) var(--r-xs) 0 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
+  }
+  .tab-btn:hover { color: var(--text-secondary); background: rgba(255,255,255,0.5); }
+  .tab-btn.active {
+    background: var(--glass-heavy);
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .tab-btn.nicole.active  { border-bottom-color: #0f766e; }
+  .tab-btn.renato.active  { border-bottom-color: #4338ca; }
+  .tab-btn.joint.active   { border-bottom-color: #7c3aed; }
+  .tab-btn.analisis.active{ border-bottom-color: #b45309; }
+
+  .badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: rgba(15,23,42,0.07);
+    color: var(--text-tertiary);
+    transition: background var(--transition), color var(--transition);
+  }
+  .tab-btn.nicole.active  .badge { background: rgba(15,118,110,0.10); color: #0f766e; }
+  .tab-btn.renato.active  .badge { background: rgba(67,56,202,0.10);  color: #4338ca; }
+  .tab-btn.joint.active   .badge { background: rgba(124,58,237,0.10); color: #7c3aed; }
+  .tab-btn.analisis.active.badge { background: rgba(180,83,9,0.10);   color: #b45309; }
+
+  /* =========================================================
+     MAIN
+  ========================================================= */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 16px 64px;
+  }
+
+  /* =========================================================
+     VIEW TRANSITIONS
+  ========================================================= */
+  .view { display: none; animation: fadeUp 0.22s ease; }
+  .view.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =========================================================
+     SECTION HEADER
+  ========================================================= */
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-accent {
+    width: 3px;
+    height: 38px;
+    border-radius: 99px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+
+  .section-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 3px;
+    font-weight: 400;
+  }
+
+  /* =========================================================
+     LEGEND
+  ========================================================= */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .legend-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--divider);
+    background: var(--glass-mid);
+    backdrop-filter: var(--blur-xs);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* =========================================================
+     SCHEDULE TABLE WRAPPER
+  ========================================================= */
+  .schedule-wrapper {
+    overflow-x: auto;
+    border-radius: var(--r-lg);
+    background: var(--glass-light);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* =========================================================
+     SCHEDULE TABLE
+  ========================================================= */
+  table.schedule {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.78rem;
+  }
+
+  /* ── Column headers ── */
+  table.schedule thead th {
+    background: var(--glass-mid);
+    color: var(--text-tertiary);
+    font-weight: 600;
+    font-size: 0.67rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 11px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--divider);
+    white-space: nowrap;
+  }
+  table.schedule thead th:first-child {
+    text-align: left;
+    padding-left: 14px;
+    min-width: 96px;
+  }
+  table.schedule thead th + th { border-left: 1px solid var(--divider); }
+
+  /* ── Body cells ── */
+  table.schedule tbody td {
+    border-bottom: 1px solid var(--divider);
+    border-left: 1px solid var(--divider);
+    padding: 4px;
+    vertical-align: top;
+  }
+  table.schedule tbody td:first-child {
+    border-left: none;
+    padding: 0;
+  }
+  table.schedule tbody tr:last-child td { border-bottom: none; }
+
+  /* ── Time column ── */
+  .time-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 10px 8px 14px;
+    min-height: 60px;
+    gap: 2px;
+    border-right: 1px solid var(--divider);
+    background: rgba(255,255,255,0.30);
+  }
+
+  .time-num {
+    font-weight: 700;
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+  }
+
+  .time-range {
+    font-size: 0.6rem;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Lunch / gap rows ── */
+  .sep-row td {
+    padding: 6px 14px;
+    border-left: none !important;
+    border-bottom: 1px solid var(--divider);
+    background: rgba(248,250,252,0.5);
+    text-align: center;
+  }
+  .sep-label {
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     CLASS CELLS — base
+  ========================================================= */
+  .cell {
+    min-height: 52px;
+    border-radius: var(--r-sm);
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+
+  .cell:not(.libre):hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .cell-name {
+    font-weight: 600;
+    font-size: 0.74rem;
+    line-height: 1.3;
+    letter-spacing: -0.1px;
+  }
+
+  .cell-room {
+    font-size: 0.62rem;
+    font-weight: 500;
+    opacity: 0.65;
+    letter-spacing: 0.02em;
+  }
+
+  .cell-code {
+    font-size: 0.58rem;
+    font-weight: 600;
+    opacity: 0.5;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* ── Libre / empty ── */
+  .cell.libre {
+    background: transparent;
+  }
+
+  /* ── Nicole: Laboratorio ── */
+  .n-lab {
+    background: var(--n-lab-bg);
+    border: 1px solid var(--n-lab-bdr);
+    color: var(--n-lab-text);
+    box-shadow: 0 1px 4px rgba(6,182,212,0.08);
+  }
+
+  /* ── Nicole: Tutoría ── */
+  .n-tut {
+    background: var(--n-tut-bg);
+    border: 1px solid var(--n-tut-bdr);
+    color: var(--n-tut-text);
+    box-shadow: 0 1px 4px rgba(34,197,94,0.08);
+  }
+
+  /* ── Nicole: Clase fija ── */
+  .n-cls {
+    background: var(--n-cls-bg);
+    border: 1px solid var(--n-cls-bdr);
+    color: var(--n-cls-text);
+    box-shadow: 0 1px 4px rgba(20,184,166,0.08);
+  }
+
+  /* ── Nicole: Práctica variable ── */
+  .n-prc {
+    background: var(--n-prc-bg);
+    border: 1px dashed var(--n-prc-bdr);
+    color: var(--n-prc-text);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      rgba(249,115,22,0.05) 5px,
+      rgba(249,115,22,0.05) 10px
+    );
+  }
+
+  /* ── Renato: Álgebra ── */
+  .r-alg {
+    background: var(--r-alg-bg);
+    border: 1px solid var(--r-alg-bdr);
+    color: var(--r-alg-text);
+    box-shadow: 0 1px 4px rgba(99,102,241,0.08);
+  }
+
+  /* ── Renato: Fund. Cálculo ── */
+  .r-cal {
+    background: var(--r-cal-bg);
+    border: 1px solid var(--r-cal-bdr);
+    color: var(--r-cal-text);
+    box-shadow: 0 1px 4px rgba(139,92,246,0.08);
+  }
+
+  /* ── Renato: Int. a la Química ── */
+  .r-qui {
+    background: var(--r-qui-bg);
+    border: 1px solid var(--r-qui-bdr);
+    color: var(--r-qui-text);
+    box-shadow: 0 1px 4px rgba(16,185,129,0.08);
+  }
+
+  /* ── Renato: Ing. y Sociedad ── */
+  .r-soc {
+    background: var(--r-soc-bg);
+    border: 1px solid var(--r-soc-bdr);
+    color: var(--r-soc-text);
+    box-shadow: 0 1px 4px rgba(245,158,11,0.08);
+  }
+
+  /* ── Renato: Hab. Com. en Inglés ── */
+  .r-ing {
+    background: var(--r-ing-bg);
+    border: 1px solid var(--r-ing-bdr);
+    color: var(--r-ing-text);
+    box-shadow: 0 1px 4px rgba(244,63,94,0.08);
+  }
+
+  /* =========================================================
+     JOINT VIEW
+  ========================================================= */
+  .joint-cell {
+    min-height: 52px;
+    border-radius: var(--r-sm);
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  .joint-half {
+    flex: 1;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .joint-half:first-child {
+    border-right: 1px solid rgba(255,255,255,0.5);
+  }
+
+  .joint-half-lbl {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    opacity: 0.5;
+    margin-bottom: 1px;
+  }
+
+  .joint-half-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.1px;
+  }
+
+  .joint-half-room {
+    font-size: 0.58rem;
+    opacity: 0.55;
+    font-weight: 500;
+  }
+
+  /* Joint state colors */
+  .s-both-cls  { background: var(--s-both-cls);  border: 1px solid var(--s-both-cls-bdr);  color: #14532d; }
+  .s-both-free { background: var(--s-both-free); border: 1px solid var(--s-both-free-bdr); color: var(--text-tertiary); }
+  .s-one-cls   { background: var(--s-one-cls);   border: 1px solid var(--s-one-cls-bdr);   color: #713f12; }
+  .s-cond      {
+    background: var(--s-cond);
+    border: 1px dashed var(--s-cond-bdr);
+    color: #7c2d12;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 5px,
+      rgba(249,115,22,0.04) 5px, rgba(249,115,22,0.04) 10px
+    );
+  }
+
+  /* =========================================================
+     LEGEND DOTS for joint view
+  ========================================================= */
+  .legend-dot.j-both-cls  { background: #4ade80; }
+  .legend-dot.j-both-free { background: #94a3b8; }
+  .legend-dot.j-one-cls   { background: #fbbf24; }
+  .legend-dot.j-cond      { background: #fb923c; }
+
+  /* =========================================================
+     ANALYSIS VIEW
+  ========================================================= */
+  .summary-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: var(--glass-heavy);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.77rem;
+  }
+
+  .summary-icon {
+    width: 28px; height: 28px;
+    border-radius: var(--r-xs);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .summary-label { color: var(--text-secondary); }
+  .summary-value { font-weight: 700; color: var(--text-primary); }
+
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+  }
+
+  .analysis-card {
+    background: var(--glass-heavy);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .analysis-card-hd {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .analysis-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .analysis-icon {
+    width: 26px; height: 26px;
+    border-radius: var(--r-xs);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .analysis-count {
+    font-size: 0.67rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+
+  /* Card header themes */
+  .c-both-cls  .analysis-card-hd { background: rgba(220,252,231,0.60); }
+  .c-both-cls  .analysis-icon    { background: rgba(34,197,94,0.15); }
+  .c-both-cls  .analysis-count   { background: rgba(34,197,94,0.15); color: #15803d; }
+  .c-both-free .analysis-card-hd { background: rgba(241,245,249,0.60); }
+  .c-both-free .analysis-icon    { background: rgba(148,163,184,0.15); }
+  .c-both-free .analysis-count   { background: rgba(148,163,184,0.15); color: #475569; }
+  .c-one-cls   .analysis-card-hd { background: rgba(254,252,232,0.60); }
+  .c-one-cls   .analysis-icon    { background: rgba(234,179,8,0.15); }
+  .c-one-cls   .analysis-count   { background: rgba(234,179,8,0.15); color: #92400e; }
+  .c-cond      .analysis-card-hd { background: rgba(255,237,213,0.60); }
+  .c-cond      .analysis-icon    { background: rgba(249,115,22,0.15); }
+  .c-cond      .analysis-count   { background: rgba(249,115,22,0.15); color: #c2410c; }
+
+  .analysis-list { padding: 10px 0; }
+
+  .analysis-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--divider);
+    transition: background var(--transition);
+  }
+  .analysis-item:last-child { border-bottom: none; }
+  .analysis-item:hover { background: rgba(255,255,255,0.4); }
+
+  .analysis-day {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    min-width: 30px;
+    padding-top: 1px;
+  }
+
+  .analysis-blocks { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+
+  .analysis-blk {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .analysis-blk strong { color: var(--text-primary); font-weight: 600; }
+
+  .analysis-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.76rem;
+    font-style: italic;
+  }
+
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+  @media (max-width: 640px) {
+    header { padding: 14px 12px 0; }
+    main   { padding: 18px 10px 48px; }
+    .header-titles h1 { font-size: 0.95rem; }
+    .tab-btn { padding: 7px 11px 9px; font-size: 0.75rem; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .summary-bar { flex-direction: column; gap: 8px; }
+    table.schedule { min-width: 580px; }
+  }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════
+     HEADER
+════════════════════════════════════════ -->
 <header>
   <div class="header-inner">
     <div class="header-top">
-      <div class="header-icon">🗓️</div>
+      <div class="header-icon">N·R</div>
       <div class="header-titles">
         <h1>Nicole &amp; Renato — Horarios 2026</h1>
-        <p>Kinesiología · Ingeniería Civil Ambiental (UFRO)</p>
+        <p>Kinesiología &nbsp;·&nbsp; Ingeniería Civil Ambiental — UFRO</p>
       </div>
     </div>
     <nav class="tabs">
       <button class="tab-btn nicole active" data-tab="view-nicole">
-        🩺 Horario Nicole
+        Horario Nicole
         <span class="badge" id="badge-nicole">—</span>
       </button>
       <button class="tab-btn renato" data-tab="view-renato">
-        ⚗️ Horario Renato
+        Horario Renato
         <span class="badge" id="badge-renato">—</span>
       </button>
       <button class="tab-btn joint" data-tab="view-conjunta">
-        🔀 Horario Conjunto
+        Horario Conjunto
         <span class="badge" id="badge-conjunta">—</span>
       </button>
       <button class="tab-btn analisis" data-tab="view-analisis">
-        📊 Análisis
+        Análisis
         <span class="badge" id="badge-analisis">—</span>
       </button>
     </nav>
@@ -610,79 +753,89 @@
 
 <main>
 
-  <!-- ============================
-       VISTA A — Nicole
-  ============================= -->
+  <!-- ═══ VISTA A — Nicole ═══ -->
   <section id="view-nicole" class="view active">
     <div class="section-header">
-      <div class="dot" style="background: var(--n-clase)"></div>
+      <div class="section-accent" style="background: linear-gradient(180deg,#0d9488,#22c55e)"></div>
       <div>
         <div class="section-title">Horario Nicole — Kinesiología</div>
-        <div class="section-subtitle">Clases confirmadas + Práctica variable</div>
+        <div class="section-subtitle">Clases fijas + Práctica variable</div>
       </div>
     </div>
 
     <div class="legend">
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--n-lab-bg);border:1px solid var(--n-lab)"></div> Laboratorio
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#0e7490"></div>Laboratorio
       </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--n-tut-bg);border:1px solid var(--n-tut)"></div> Tutoría
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#15803d"></div>Tutoría
       </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:var(--n-clase-bg);border:1px solid var(--n-clase)"></div> Clase fija
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#0f766e"></div>Clase fija
       </div>
-      <div class="legend-item">
-        <div class="legend-dot n-prac"></div> Práctica (variable)
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#c2410c"></div>Práctica (variable)
       </div>
     </div>
 
     <div class="schedule-wrapper" id="table-nicole"></div>
   </section>
 
-  <!-- ============================
-       VISTA B — Renato
-  ============================= -->
+  <!-- ═══ VISTA B — Renato ═══ -->
   <section id="view-renato" class="view">
     <div class="section-header">
-      <div class="dot" style="background: var(--r-clase)"></div>
+      <div class="section-accent" style="background: linear-gradient(180deg,#4338ca,#7c3aed)"></div>
       <div>
         <div class="section-title">Horario Renato — Ing. Civil Ambiental</div>
         <div class="section-subtitle">UFRO · Semestre 2026/1</div>
       </div>
     </div>
 
+    <div class="legend">
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#4338ca"></div>Álgebra (IME043-9)
+      </div>
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#6d28d9"></div>Fund. Cálculo (IME042-9)
+      </div>
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#047857"></div>Int. a la Química (ICQ011-9)
+      </div>
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#92400e"></div>Ing. y Sociedad
+      </div>
+      <div class="legend-pill">
+        <div class="legend-dot" style="background:#9f1239"></div>Hab. Com. en Inglés (DFI052-13)
+      </div>
+    </div>
+
     <div class="schedule-wrapper" id="table-renato"></div>
   </section>
 
-  <!-- ============================
-       VISTA C — Conjunta
-  ============================= -->
+  <!-- ═══ VISTA C — Conjunto ═══ -->
   <section id="view-conjunta" class="view">
     <div class="section-header">
-      <div class="dot" style="background: #a855f7"></div>
+      <div class="section-accent" style="background: linear-gradient(180deg,#7c3aed,#a855f7)"></div>
       <div>
         <div class="section-title">Horario Conjunto</div>
-        <div class="section-subtitle">Cada celda dividida: Nicole (izq.) | Renato (der.)</div>
+        <div class="section-subtitle">Cada celda dividida: Nicole (izq.) / Renato (der.)</div>
       </div>
     </div>
 
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot both-class"></div> Ambos con clase</div>
-      <div class="legend-item"><div class="legend-dot both-free"></div> Ambos libres</div>
-      <div class="legend-item"><div class="legend-dot one-class"></div> Uno con clase / otro libre</div>
-      <div class="legend-item"><div class="legend-dot cond"></div> Nicole práctica variable + Renato libre</div>
+      <div class="legend-pill"><div class="legend-dot j-both-cls"></div>Ambos con clase</div>
+      <div class="legend-pill"><div class="legend-dot j-both-free"></div>Ambos libres</div>
+      <div class="legend-pill"><div class="legend-dot j-one-cls"></div>Uno con clase</div>
+      <div class="legend-pill"><div class="legend-dot j-cond"></div>Nicole práctica / Renato libre</div>
     </div>
 
     <div class="schedule-wrapper" id="table-conjunta"></div>
   </section>
 
-  <!-- ============================
-       VISTA D — Análisis
-  ============================= -->
+  <!-- ═══ VISTA D — Análisis ═══ -->
   <section id="view-analisis" class="view">
     <div class="section-header">
-      <div class="dot" style="background: #f59e0b"></div>
+      <div class="section-accent" style="background: linear-gradient(180deg,#b45309,#d97706)"></div>
       <div>
         <div class="section-title">Análisis de Coincidencias</div>
         <div class="section-subtitle">Resumen por tipo de bloque compartido</div>
@@ -696,261 +849,252 @@
 </main>
 
 <script>
-/* =======================================================
+/* ═══════════════════════════════════════════════════════
    DATOS
-======================================================= */
+═══════════════════════════════════════════════════════ */
 
-const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-const DIAS_KEYS = ['lun', 'mar', 'mie', 'jue', 'vie'];
+const DIAS      = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+const DIAS_KEYS = ['lun',   'mar',    'mie',        'jue',    'vie'];
 
 /*
-  Tipo de celda:
-    "lab"     → laboratorio Nicole
-    "tut"     → tutoría Nicole
-    "clase"   → clase fija
-    "practica"→ práctica variable Nicole
-    "libre"   → sin actividad
+  Tipos:
+    lab      → laboratorio (Nicole)
+    tut      → tutoría (Nicole)
+    clase    → clase fija
+    practica → práctica variable (Nicole)
+    libre    → sin actividad
 */
 
-// Nicole: matriz [bloque_idx][dia_idx]  (bloques reales: 0-3, 5-7 → indices en BLOQUES)
-// Mapeamos los 7 bloques lectivos (0,1,2,3,5,6,7) + bloque nocturno 9 (idx 9)
-
+/* ─── Nicole ─────────────────────────────────────────── */
 const NICOLE = {
-  /* bloque_num : { lun, mar, mie, jue, vie } */
-  0: { // 1° 08:30
-    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+  0: { // 1° 08:30–09:30
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1' },
     mar: { tipo:'tut',      nombre:'Tutoría' },
     mie: { tipo:'clase',    nombre:'Bioestadística' },
-    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2' },
     vie: { tipo:'tut',      nombre:'Tutoría' },
   },
   1: { // 2°
-    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1' },
     mar: { tipo:'tut',      nombre:'Tutoría' },
     mie: { tipo:'clase',    nombre:'Bioestadística' },
-    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2' },
     vie: { tipo:'tut',      nombre:'Tutoría' },
   },
   2: { // 3°
-    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1', tag:'Práctica' },
+    lun: { tipo:'lab',      nombre:'Laboratorio Grupo 1' },
     mar: { tipo:'tut',      nombre:'Tutoría' },
     mie: { tipo:'clase',    nombre:'Bioestadística' },
-    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2', tag:'Práctica' },
+    jue: { tipo:'lab',      nombre:'Laboratorio Grupo 2' },
     vie: { tipo:'tut',      nombre:'Tutoría' },
   },
   3: { // 4°
     lun: { tipo:'clase',    nombre:'Psicología' },
-    mar: { tipo:'clase',    nombre:'Seminario/Taller', sala:'S-202' },
-    mie: { tipo:'practica', nombre:'Práctica (variable)' },
-    jue: { tipo:'practica', nombre:'Práctica (variable)' },
-    vie: { tipo:'clase',    nombre:'Seminario/Taller', sala:'Prat-201' },
+    mar: { tipo:'clase',    nombre:'Seminario/Taller',     sala:'S-202' },
+    mie: { tipo:'practica', nombre:'Práctica' },
+    jue: { tipo:'practica', nombre:'Práctica' },
+    vie: { tipo:'clase',    nombre:'Seminario/Taller',     sala:'Prat-201' },
   },
   5: { // 5°
-    lun: { tipo:'clase',    nombre:'Seminario Biomecánica', sala:'S-202' },
-    mar: { tipo:'practica', nombre:'Práctica (variable)' },
-    mie: { tipo:'clase',    nombre:'Física', sala:'CF-110' },
-    jue: { tipo:'practica', nombre:'Práctica (variable)' },
-    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+    lun: { tipo:'clase',    nombre:'Seminario Biomecánica',sala:'S-202' },
+    mar: { tipo:'practica', nombre:'Práctica' },
+    mie: { tipo:'clase',    nombre:'Física',               sala:'CF-110' },
+    jue: { tipo:'practica', nombre:'Práctica' },
+    vie: { tipo:'practica', nombre:'Práctica' },
   },
   6: { // 6°
-    lun: { tipo:'clase',    nombre:'Seminario Biomecánica', sala:'S-202' },
-    mar: { tipo:'practica', nombre:'Práctica (variable)' },
+    lun: { tipo:'clase',    nombre:'Seminario Biomecánica',sala:'S-202' },
+    mar: { tipo:'practica', nombre:'Práctica' },
     mie: { tipo:'clase',    nombre:'Neuroanatomía' },
-    jue: { tipo:'practica', nombre:'Práctica (variable)' },
-    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+    jue: { tipo:'practica', nombre:'Práctica' },
+    vie: { tipo:'practica', nombre:'Práctica' },
   },
   7: { // 7°
     lun: { tipo:'libre',    nombre:'' },
-    mar: { tipo:'practica', nombre:'Práctica (variable)' },
+    mar: { tipo:'practica', nombre:'Práctica' },
     mie: { tipo:'clase',    nombre:'Neuroanatomía' },
-    jue: { tipo:'practica', nombre:'Práctica (variable)' },
-    vie: { tipo:'practica', nombre:'Práctica (variable)' },
+    jue: { tipo:'practica', nombre:'Práctica' },
+    vie: { tipo:'practica', nombre:'Práctica' },
   },
-  9: { // 9° nocturno
+};
+
+/* ─── Renato (PDF oficial UFRO 2026/1) ───────────────── */
+const RENATO = {
+  0: { // 1°  — mar Int.Química, jue Álgebra, vie Ing.y Sociedad
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205',       css:'r-qui' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Álgebra',           sala:'R-103',       css:'r-alg' },
+    vie: { tipo:'clase', nombre:'Ing. y Sociedad',   sala:'E-208',       css:'r-soc' },
+  },
+  1: { // 2°
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205',       css:'r-qui' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Álgebra',           sala:'R-103',       css:'r-alg' },
+    vie: { tipo:'clase', nombre:'Ing. y Sociedad',   sala:'E-208',       css:'r-soc' },
+  },
+  2: { // 3°  — lun Álgebra, mar FundCálculo RA-2004, mie FundCálculo RA-1004, jue libre, vie FundCálculo RA-2001
+    lun: { tipo:'clase', nombre:'Álgebra',           sala:'R-103',       css:'r-alg' },
+    mar: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-2004',     css:'r-cal' },
+    mie: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-1004',     css:'r-cal' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-2001',     css:'r-cal' },
+  },
+  3: { // 4°
+    lun: { tipo:'clase', nombre:'Álgebra',           sala:'R-103',       css:'r-alg' },
+    mar: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-2004',     css:'r-cal' },
+    mie: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-1004',     css:'r-cal' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'clase', nombre:'Fund. Cálculo',     sala:'RA-2001',     css:'r-cal' },
+  },
+  5: { // 5°  — lun Int.Química, mie Álgebra RA-1002
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205',       css:'r-qui' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'clase', nombre:'Álgebra',           sala:'RA-1002',     css:'r-alg' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  6: { // 6°
+    lun: { tipo:'clase', nombre:'Int. a la Química', sala:'E-205',       css:'r-qui' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'clase', nombre:'Álgebra',           sala:'RA-1002',     css:'r-alg' },
+    jue: { tipo:'libre', nombre:'' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  7: { // 7°  — lun Ing.y Sociedad VIR-201, jue Hab.Com DITFO-104
+    lun: { tipo:'clase', nombre:'Ing. y Sociedad',   sala:'VIR-201-FICA',css:'r-soc' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Hab. Com. en Inglés',sala:'DITFO-104',  css:'r-ing' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  8: { // 8°  — jue Hab.Com DITFO-104
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Hab. Com. en Inglés',sala:'DITFO-104',  css:'r-ing' },
+    vie: { tipo:'libre', nombre:'' },
+  },
+  9: { // 9°  — todo libre
     lun: { tipo:'libre', nombre:'' },
     mar: { tipo:'libre', nombre:'' },
     mie: { tipo:'libre', nombre:'' },
     jue: { tipo:'libre', nombre:'' },
     vie: { tipo:'libre', nombre:'' },
   },
-};
-
-// Fuente: PDF oficial UFRO 2026/1
-const RENATO = {
-  0: { // 1° 08:30 — lun vacío, mar Int.Química, mie vacío, jue Álgebra, vie vacío
-    lun: { tipo:'libre',  nombre:'' },
-    mar: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
-    mie: { tipo:'libre',  nombre:'' },
-    jue: { tipo:'clase',  nombre:'Álgebra', sala:'R-103' },
-    vie: { tipo:'libre',  nombre:'' },
-  },
-  1: { // 2° 09:40
-    lun: { tipo:'libre',  nombre:'' },
-    mar: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
-    mie: { tipo:'libre',  nombre:'' },
-    jue: { tipo:'clase',  nombre:'Álgebra', sala:'R-103' },
-    vie: { tipo:'libre',  nombre:'' },
-  },
-  2: { // 3° 10:50 — lun Álgebra, mar Fund.Cálculo RA-2004, mie Fund.Cálculo RA-1004, jue vacío, vie Fund.Cálculo RA-2001
-    lun: { tipo:'clase',  nombre:'Álgebra',       sala:'R-103' },
-    mar: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2004' },
-    mie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-1004' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2001' },
-  },
-  3: { // 4° 12:00
-    lun: { tipo:'clase',  nombre:'Álgebra',       sala:'R-103' },
-    mar: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2004' },
-    mie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-1004' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'clase',  nombre:'Fund. Cálculo', sala:'RA-2001' },
-  },
-  5: { // 5° 14:30 — lun Int.Química, mar vacío, mie Álgebra RA-1002, jue vacío, vie vacío
-    lun: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'libre',  nombre:'' },
-    mie: { tipo:'clase',  nombre:'Álgebra', sala:'RA-1002' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'libre',  nombre:'' },
-  },
-  6: { // 6° 15:40
-    lun: { tipo:'clase',  nombre:'Int. a la Química', sala:'E-205' },
-    mar: { tipo:'libre',  nombre:'' },
-    mie: { tipo:'clase',  nombre:'Álgebra', sala:'RA-1002' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'libre',  nombre:'' },
-  },
-  7: { // 7° 16:50 — lun Ing. y Sociedad, resto vacío
-    lun: { tipo:'clase',  nombre:'Ing. y Sociedad', sala:'VIR-201-FICA' },
-    mar: { tipo:'libre',  nombre:'' },
-    mie: { tipo:'libre',  nombre:'' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'libre',  nombre:'' },
-  },
-  9: { // 9° 19:10 — lun Hab. Com. en Inglés, resto vacío
-    lun: { tipo:'clase',  nombre:'Hab. Com. en Inglés', sala:'VIR-204' },
-    mar: { tipo:'libre',  nombre:'' },
-    mie: { tipo:'libre',  nombre:'' },
-    jue: { tipo:'libre',  nombre:'' },
-    vie: { tipo:'libre',  nombre:'' },
+  10: { // 10° — jue Hab.Com DITFO-MEET-02 (virtual)
+    lun: { tipo:'libre', nombre:'' },
+    mar: { tipo:'libre', nombre:'' },
+    mie: { tipo:'libre', nombre:'' },
+    jue: { tipo:'clase', nombre:'Hab. Com. en Inglés',sala:'DITFO-MEET-02',css:'r-ing', nota:'virtual' },
+    vie: { tipo:'libre', nombre:'' },
   },
 };
 
-/* =======================================================
+/* ═══════════════════════════════════════════════════════
+   TIEMPO
+═══════════════════════════════════════════════════════ */
+
+const BLOCK_RANGES = {
+  0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
+  5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 8:'18:00–19:00',
+  9:'19:10–20:10', 10:'20:20–21:20',
+};
+
+/* ═══════════════════════════════════════════════════════
    HELPERS
-======================================================= */
+═══════════════════════════════════════════════════════ */
 
-function getCellN(bloqueN, diaKey) {
-  return (NICOLE[bloqueN] && NICOLE[bloqueN][diaKey]) || { tipo:'libre', nombre:'' };
+function getCellN(bn, dk) {
+  return (NICOLE[bn] && NICOLE[bn][dk]) || { tipo:'libre', nombre:'' };
 }
 
-function getCellR(bloqueN, diaKey) {
-  return (RENATO[bloqueN] && RENATO[bloqueN][diaKey]) || { tipo:'libre', nombre:'' };
+function getCellR(bn, dk) {
+  return (RENATO[bn] && RENATO[bn][dk]) || { tipo:'libre', nombre:'' };
 }
 
-function isActive(c) { return c.tipo !== 'libre'; }
+function isActive(c)    { return c.tipo !== 'libre'; }
 function isConfirmed(c) { return c.tipo !== 'libre' && c.tipo !== 'practica'; }
-function isPractica(c) { return c.tipo === 'practica'; }
+function isPractica(c)  { return c.tipo === 'practica'; }
 
-/* Determine joint state */
 function jointState(cn, cr) {
-  const nActive = isActive(cn);
-  const rActive = isActive(cr);
-  const nConf   = isConfirmed(cn);
-  const rConf   = isConfirmed(cr);
-
-  if (nConf && rConf)               return 'both-class';
-  if (!nActive && !rActive)         return 'both-free';
-  if (isPractica(cn) && !rActive)   return 'cond';
-  return 'one-class';
+  if (isConfirmed(cn) && isConfirmed(cr)) return 'both-cls';
+  if (!isActive(cn)   && !isActive(cr))   return 'both-free';
+  if (isPractica(cn)  && !isActive(cr))   return 'cond';
+  return 'one-cls';
 }
 
-/* =======================================================
-   RENDER helpers
-======================================================= */
+/* ═══════════════════════════════════════════════════════
+   RENDER — Nicole cells
+═══════════════════════════════════════════════════════ */
 
 function cellNicole(c) {
-  if (c.tipo === 'libre') return `<div class="cell libre">—</div>`;
+  if (c.tipo === 'libre') return `<div class="cell libre"></div>`;
+
   let cls = 'cell ';
-  if (c.tipo === 'lab')      cls += 'n-lab';
-  else if (c.tipo === 'tut') cls += 'n-tut';
-  else if (c.tipo === 'practica') cls += 'n-prac';
-  else cls += 'n-clase';
+  if      (c.tipo === 'lab')      cls += 'n-lab';
+  else if (c.tipo === 'tut')      cls += 'n-tut';
+  else if (c.tipo === 'practica') cls += 'n-prc';
+  else                            cls += 'n-cls';
+
   const sala = c.sala ? `<span class="cell-room">${c.sala}</span>` : '';
-  const tag  = c.tag  ? `<span class="cell-tag">${c.tag}</span>` : '';
-  return `<div class="${cls}"><span class="cell-name">${c.nombre}</span>${sala}${tag}</div>`;
+  return `<div class="${cls}"><span class="cell-name">${c.nombre}</span>${sala}</div>`;
 }
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — Renato cells
+═══════════════════════════════════════════════════════ */
 
 function cellRenato(c) {
-  if (c.tipo === 'libre') return `<div class="cell libre">—</div>`;
+  if (c.tipo === 'libre') return `<div class="cell libre"></div>`;
+  const css  = c.css  || 'r-alg';
   const sala = c.sala ? `<span class="cell-room">${c.sala}</span>` : '';
-  return `<div class="cell r-clase"><span class="cell-name">${c.nombre}</span>${sala}</div>`;
+  const nota = c.nota ? `<span class="cell-code">${c.nota}</span>` : '';
+  return `<div class="cell ${css}"><span class="cell-name">${c.nombre}</span>${sala}${nota}</div>`;
 }
 
-function halfNicole(c, state) {
+/* ═══════════════════════════════════════════════════════
+   RENDER — joint cell halves
+═══════════════════════════════════════════════════════ */
+
+function halfOf(c, label) {
   const name = c.tipo === 'libre' ? '—' : c.nombre;
-  const room = (!c.sala || c.tipo === 'libre') ? '' : `<div class="joint-half-room">${c.sala}</div>`;
+  const room = (c.sala && c.tipo !== 'libre') ? `<div class="joint-half-room">${c.sala}</div>` : '';
   return `
     <div class="joint-half">
-      <div class="joint-half-label">Nicole</div>
+      <div class="joint-half-lbl">${label}</div>
       <div class="joint-half-name">${name}</div>
       ${room}
     </div>`;
 }
 
-function halfRenato(c, state) {
-  const name = c.tipo === 'libre' ? '—' : c.nombre;
-  const room = (!c.sala || c.tipo === 'libre') ? '' : `<div class="joint-half-room">${c.sala}</div>`;
-  return `
-    <div class="joint-half">
-      <div class="joint-half-label">Renato</div>
-      <div class="joint-half-name">${name}</div>
-      ${room}
-    </div>`;
-}
+/* ═══════════════════════════════════════════════════════
+   BUILD TABLE
+═══════════════════════════════════════════════════════ */
 
-function buildTable(getData, renderCell, includeNocturno) {
-  const bloquesList = [0,1,2,3,5,6,7];
-  if (includeNocturno) bloquesList.push(8, 9); // 8 = separador vacío, 9 = nocturno
+function buildTable(getData, renderCell, nocturno) {
+  const blocks = [0,1,2,3,5,6,7];
+  if (nocturno) blocks.push(8, 9, 10);
 
   let rows = '';
-  let prevBloqueNum = -1;
+  let prev = -1;
 
-  for (const bn of bloquesList) {
-    // Insert lunch spacer after bloque 3
-    if (prevBloqueNum === 3) {
-      rows += `
-        <tr class="lunch-row">
-          <td colspan="${DIAS.length + 1}">
-            <div class="lunch-label">🍽 Almuerzo — 13:10–14:20</div>
-          </td>
-        </tr>`;
+  for (const bn of blocks) {
+    // Lunch divider after block 3
+    if (prev === 3) {
+      rows += `<tr class="sep-row"><td colspan="${DIAS.length + 1}"><span class="sep-label">Almuerzo &mdash; 13:10–14:10</span></td></tr>`;
     }
-    // Block 8 = empty gap row (18:00–19:00, no classes for anyone)
+    // Evening gap before block 8
     if (bn === 8) {
-      rows += `
-        <tr>
-          <td>
-            <div class="time-block">
-              <span class="time-num">8°</span>
-              <span class="time-range">18:00–19:00</span>
-            </div>
-          </td>
-          ${DIAS_KEYS.map(() => `<td><div class="cell libre">—</div></td>`).join('')}
-        </tr>`;
-      prevBloqueNum = bn;
-      continue;
+      rows += `<tr class="sep-row"><td colspan="${DIAS.length + 1}"><span class="sep-label">Tarde / Noche</span></td></tr>`;
     }
 
-    const bloqRangosMap = {
-      0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
-      5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 9:'19:10–20:10',
-    };
-    const rangoStr = bloqRangosMap[bn] || '';
+    const range = BLOCK_RANGES[bn] || '';
 
     let tds = '';
     for (const dk of DIAS_KEYS) {
-      const c = getData(bn, dk);
-      tds += `<td>${renderCell(c)}</td>`;
+      tds += `<td>${renderCell(getData(bn, dk))}</td>`;
     }
 
     rows += `
@@ -958,55 +1102,49 @@ function buildTable(getData, renderCell, includeNocturno) {
         <td>
           <div class="time-block">
             <span class="time-num">Bloque ${bn}°</span>
-            <span class="time-range">${rangoStr}</span>
+            <span class="time-range">${range}</span>
           </div>
         </td>
         ${tds}
       </tr>`;
-
-    prevBloqueNum = bn;
+    prev = bn;
   }
 
   return `
     <table class="schedule">
-      <thead>
-        <tr>
-          <th class="time-col">Bloque / Hora</th>
-          ${DIAS.map(d => `<th>${d}</th>`).join('')}
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Bloque / Hora</th>
+        ${DIAS.map(d => `<th>${d}</th>`).join('')}
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
+
+/* ═══════════════════════════════════════════════════════
+   BUILD JOINT TABLE
+═══════════════════════════════════════════════════════ */
 
 function buildJointTable() {
-  const bloquesList = [0,1,2,3,5,6,7,8,9];
-  const bloqRangosMap = {
-    0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
-    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 8:'18:00–19:00', 9:'19:10–20:10',
-  };
+  const blocks = [0,1,2,3,5,6,7,8,9,10];
   let rows = '';
-  let prevBloqueNum = -1;
+  let prev = -1;
 
-  for (const bn of bloquesList) {
-    if (prevBloqueNum === 3) {
-      rows += `
-        <tr class="lunch-row">
-          <td colspan="${DIAS.length + 1}">
-            <div class="lunch-label">🍽 Almuerzo — 13:10–14:20</div>
-          </td>
-        </tr>`;
+  for (const bn of blocks) {
+    if (prev === 3) {
+      rows += `<tr class="sep-row"><td colspan="${DIAS.length + 1}"><span class="sep-label">Almuerzo &mdash; 13:10–14:10</span></td></tr>`;
+    }
+    if (bn === 8) {
+      rows += `<tr class="sep-row"><td colspan="${DIAS.length + 1}"><span class="sep-label">Tarde / Noche</span></td></tr>`;
     }
 
-    const rangoStr = bloqRangosMap[bn] || '';
+    const range = BLOCK_RANGES[bn] || '';
 
     let tds = '';
     for (const dk of DIAS_KEYS) {
-      const cn = getCellN(bn, dk);
-      const cr = getCellR(bn, dk);
+      const cn    = getCellN(bn, dk);
+      const cr    = getCellR(bn, dk);
       const state = jointState(cn, cr);
-      const cls = `joint-cell state-${state}`;
-      tds += `<td><div class="${cls}">${halfNicole(cn, state)}${halfRenato(cr, state)}</div></td>`;
+      tds += `<td><div class="joint-cell s-${state}">${halfOf(cn,'Nicole')}${halfOf(cr,'Renato')}</div></td>`;
     }
 
     rows += `
@@ -1014,156 +1152,116 @@ function buildJointTable() {
         <td>
           <div class="time-block">
             <span class="time-num">Bloque ${bn}°</span>
-            <span class="time-range">${rangoStr}</span>
+            <span class="time-range">${range}</span>
           </div>
         </td>
         ${tds}
       </tr>`;
-
-    prevBloqueNum = bn;
+    prev = bn;
   }
 
   return `
     <table class="schedule">
-      <thead>
-        <tr>
-          <th class="time-col">Bloque / Hora</th>
-          ${DIAS.map(d => `<th>${d}</th>`).join('')}
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Bloque / Hora</th>
+        ${DIAS.map(d => `<th>${d}</th>`).join('')}
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
 
-/* =======================================================
+/* ═══════════════════════════════════════════════════════
    ANALYSIS
-======================================================= */
+═══════════════════════════════════════════════════════ */
 
 function buildAnalysis() {
   const cats = {
-    'both-class': { label:'Ambos con clase',                     icon:'🟢', key:'card-both-class', items:[] },
-    'both-free':  { label:'Ambos libres',                        icon:'🔴', key:'card-both-free',  items:[] },
-    'one-class':  { label:'Uno con clase, otro libre',           icon:'🟡', key:'card-one-class',  items:[] },
-    'cond':       { label:'Nicole práctica variable + Renato libre', icon:'🌫️', key:'card-cond', items:[] },
+    'both-cls':  { label:'Ambos con clase',                        icon:'&#9679;', key:'c-both-cls',  items:[] },
+    'both-free': { label:'Ambos libres',                           icon:'&#9675;', key:'c-both-free', items:[] },
+    'one-cls':   { label:'Uno con clase, otro libre',              icon:'&#9671;', key:'c-one-cls',   items:[] },
+    'cond':      { label:'Nicole práctica variable + Renato libre',icon:'&#9670;', key:'c-cond',      items:[] },
   };
 
-  const bloquesList = [0,1,2,3,5,6,7,8,9];
-  const bloqRangos = {
-    0:'08:30–09:30', 1:'09:40–10:40', 2:'10:50–11:50', 3:'12:00–13:00',
-    5:'14:30–15:30', 6:'15:40–16:40', 7:'16:50–17:50', 8:'18:00–19:00', 9:'19:10–20:10',
-  };
+  const blocks = [0,1,2,3,5,6,7,8,9,10];
 
   for (const dk of DIAS_KEYS) {
-    for (const bn of bloquesList) {
-      const cn = getCellN(bn, dk);
-      const cr = getCellR(bn, dk);
+    for (const bn of blocks) {
+      const cn    = getCellN(bn, dk);
+      const cr    = getCellR(bn, dk);
       const state = jointState(cn, cr);
-      const diaLabel = DIAS[DIAS_KEYS.indexOf(dk)];
-      const entry = {
-        dia: diaLabel,
-        bloque: bn,
-        rango: bloqRangos[bn],
-        cn, cr,
-      };
-      if (cats[state]) cats[state].items.push(entry);
+      const dia   = DIAS[DIAS_KEYS.indexOf(dk)];
+      if (cats[state]) cats[state].items.push({ dia, bn, range: BLOCK_RANGES[bn] || '', cn, cr });
     }
   }
 
-  // Group by day
   function groupByDay(items) {
-    const map = {};
+    const m = {};
     for (const it of items) {
-      if (!map[it.dia]) map[it.dia] = [];
-      map[it.dia].push(it);
+      if (!m[it.dia]) m[it.dia] = [];
+      m[it.dia].push(it);
     }
-    return map;
+    return m;
   }
 
-  function renderCard(state, cat) {
+  function cardHTML(state, cat) {
     const grouped = groupByDay(cat.items);
     let listHTML = '';
+
     for (const dia of DIAS) {
       if (!grouped[dia]) continue;
-      const blocks = grouped[dia].map(it => {
+      const blks = grouped[dia].map(it => {
         let detail = '';
-        if (state === 'both-class') {
-          detail = `${it.cn.nombre} | ${it.cr.nombre}`;
-        } else if (state === 'both-free') {
-          detail = 'Libres los dos';
-        } else if (state === 'one-class') {
-          const who = isActive(it.cn)
-            ? `Nicole: ${it.cn.nombre}`
-            : `Renato: ${it.cr.nombre}`;
-          detail = who;
-        } else if (state === 'cond') {
-          detail = `Nicole: Práctica variable — Renato libre`;
-        }
-        return `<div class="analysis-block">Bloque ${it.bloque}° <span>(${it.rango})</span> — ${detail}</div>`;
+        if      (state === 'both-cls')  detail = `${it.cn.nombre} &nbsp;|&nbsp; ${it.cr.nombre}`;
+        else if (state === 'both-free') detail = 'Libres los dos';
+        else if (state === 'one-cls')   detail = isActive(it.cn) ? `Nicole: ${it.cn.nombre}` : `Renato: ${it.cr.nombre}`;
+        else if (state === 'cond')      detail = 'Nicole: Práctica variable &mdash; Renato libre';
+        return `<div class="analysis-blk"><strong>Bloque ${it.bn}°</strong> (${it.range}) &mdash; ${detail}</div>`;
       }).join('');
-
       listHTML += `
         <div class="analysis-item">
-          <div class="analysis-day">${dia.substring(0,3)}</div>
-          <div class="analysis-blocks">${blocks}</div>
+          <div class="analysis-day">${dia.slice(0,3)}</div>
+          <div class="analysis-blocks">${blks}</div>
         </div>`;
     }
 
-    if (!listHTML) {
-      listHTML = `<div class="analysis-empty">Sin bloques en esta categoría</div>`;
-    }
+    if (!listHTML) listHTML = `<div class="analysis-empty">Sin bloques en esta categoría</div>`;
 
     return `
       <div class="analysis-card ${cat.key}">
-        <div class="analysis-card-header">
+        <div class="analysis-card-hd">
           <div class="analysis-card-title">
-            <div class="analysis-card-icon">${cat.icon}</div>
+            <div class="analysis-icon">${cat.icon}</div>
             ${cat.label}
           </div>
-          <span class="analysis-count-badge">${cat.items.length} bloques</span>
+          <span class="analysis-count">${cat.items.length} bloques</span>
         </div>
         <div class="analysis-list">${listHTML}</div>
       </div>`;
   }
 
   let grid = '';
-  for (const [state, cat] of Object.entries(cats)) {
-    grid += renderCard(state, cat);
-  }
-
+  for (const [state, cat] of Object.entries(cats)) grid += cardHTML(state, cat);
   return { grid, cats };
 }
 
-/* =======================================================
-   BADGES
-======================================================= */
+/* ═══════════════════════════════════════════════════════
+   COUNTS
+═══════════════════════════════════════════════════════ */
 
-function countNicoleClases() {
+function countActive(getFn, blocks) {
   let n = 0;
-  for (const bn of [0,1,2,3,5,6,7,8,9]) {
-    for (const dk of DIAS_KEYS) {
-      if (isActive(getCellN(bn, dk))) n++;
-    }
-  }
+  for (const bn of blocks) for (const dk of DIAS_KEYS) if (isActive(getFn(bn, dk))) n++;
   return n;
 }
 
-function countRenatoClases() {
-  let n = 0;
-  for (const bn of [0,1,2,3,5,6,7,8,9]) {
-    for (const dk of DIAS_KEYS) {
-      if (isActive(getCellR(bn, dk))) n++;
-    }
-  }
-  return n;
-}
-
-/* =======================================================
+/* ═══════════════════════════════════════════════════════
    INIT
-======================================================= */
+═══════════════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Render tables
+  const ALL_BLOCKS = [0,1,2,3,5,6,7,8,9,10];
+
   document.getElementById('table-nicole').innerHTML =
     buildTable(getCellN, cellNicole, false);
 
@@ -1173,52 +1271,49 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('table-conjunta').innerHTML =
     buildJointTable();
 
-  // Analysis
   const { grid, cats } = buildAnalysis();
   document.getElementById('analysis-grid').innerHTML = grid;
 
-  // Summary bar
-  const bothFree = cats['both-free'].items.length;
-  const bothClass = cats['both-class'].items.length;
-  const cond = cats['cond'].items.length;
-  const oneClass = cats['one-class'].items.length;
+  const bothFree  = cats['both-free'].items.length;
+  const bothCls   = cats['both-cls'].items.length;
+  const cond      = cats['cond'].items.length;
+  const oneCls    = cats['one-cls'].items.length;
 
   document.getElementById('summary-bar').innerHTML = `
     <div class="summary-stat">
-      <span class="summary-stat-icon">🟢</span>
-      <span class="summary-stat-label">Ambos con clase:</span>
-      <span class="summary-stat-value">${bothClass} bloques</span>
+      <div class="summary-icon" style="background:rgba(34,197,94,0.12);color:#15803d">&#9679;</div>
+      <span class="summary-label">Ambos con clase:</span>
+      <span class="summary-value">${bothCls}</span>
     </div>
     <div class="summary-stat">
-      <span class="summary-stat-icon">🔴</span>
-      <span class="summary-stat-label">Libres juntos:</span>
-      <span class="summary-stat-value">${bothFree} bloques</span>
+      <div class="summary-icon" style="background:rgba(148,163,184,0.12);color:#64748b">&#9675;</div>
+      <span class="summary-label">Libres juntos:</span>
+      <span class="summary-value">${bothFree}</span>
     </div>
     <div class="summary-stat">
-      <span class="summary-stat-icon">🌫️</span>
-      <span class="summary-stat-label">Posible libre juntos:</span>
-      <span class="summary-stat-value">${cond} bloques</span>
+      <div class="summary-icon" style="background:rgba(249,115,22,0.12);color:#c2410c">&#9670;</div>
+      <span class="summary-label">Posible libre juntos:</span>
+      <span class="summary-value">${cond}</span>
     </div>
     <div class="summary-stat">
-      <span class="summary-stat-icon">🟡</span>
-      <span class="summary-stat-label">Uno con clase:</span>
-      <span class="summary-stat-value">${oneClass} bloques</span>
+      <div class="summary-icon" style="background:rgba(234,179,8,0.12);color:#92400e">&#9671;</div>
+      <span class="summary-label">Uno con clase:</span>
+      <span class="summary-value">${oneCls}</span>
     </div>`;
 
-  // Badges
-  document.getElementById('badge-nicole').textContent   = `${countNicoleClases()} bloques`;
-  document.getElementById('badge-renato').textContent   = `${countRenatoClases()} bloques`;
-  document.getElementById('badge-conjunta').textContent = `${DIAS.length * 9} celdas`;
-  document.getElementById('badge-analisis').textContent = `Libres juntos: ${bothFree + cond}`;
+  const nBloques = countActive(getCellN, [0,1,2,3,5,6,7]);
+  const rBloques = countActive(getCellR, ALL_BLOCKS);
 
-  // Tabs
-  const tabs = document.querySelectorAll('.tab-btn');
-  const views = document.querySelectorAll('.view');
+  document.getElementById('badge-nicole').textContent   = `${nBloques} bloques`;
+  document.getElementById('badge-renato').textContent   = `${rBloques} bloques`;
+  document.getElementById('badge-conjunta').textContent = `${DIAS.length * ALL_BLOCKS.length} celdas`;
+  document.getElementById('badge-analisis').textContent = `${bothFree + cond} libres`;
 
-  tabs.forEach(btn => {
+  /* ── Tab switching ── */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      views.forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
     });
